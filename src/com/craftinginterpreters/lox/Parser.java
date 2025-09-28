@@ -19,9 +19,11 @@ class Parser {
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {
-            statements.add(declaration());
+            Stmt stmt = declaration();
+            if (stmt != null) {
+                statements.add(stmt);
+            }
         }
-
         return statements;
     }
 
@@ -31,8 +33,11 @@ class Parser {
 
     private Stmt declaration() {
         try {
+            // Check for river definitions first
+            if (check(IDENTIFIER) && checkAhead(1, ROOT, LESS, GREATER)) {
+                return riverDeclaration();
+            }
             if (match(VAR)) return varDeclaration();
-
             return statement();
         } catch (ParseError error) {
             synchronize();
@@ -40,11 +45,66 @@ class Parser {
         }
     }
 
+    // Parse river declarations like: googong ^ rW[...] T(...) A(...)
+    private Stmt riverDeclaration() {
+        Token name = consume(IDENTIFIER, "Expect river name.");
+
+        // Parse flow type (^, <, >)
+        Expr flowType = null;
+        if (match(ROOT, LESS, GREATER)) {
+            Token operator = previous();
+            Expr operand = null;
+
+            // Handle river combinations like: < (jerra & upper_molo & quean)
+            if (check(LEFT_PAREN)) {
+                operand = primary(); // This will handle the parenthesized expression
+            }
+
+            flowType = new Expr.FlowExpr(operator, operand);
+        }
+
+        // Parse properties: rW[...], T(...), A(...)
+        List<Expr> properties = new ArrayList<>();
+        while (!isAtEnd() && !check(IDENTIFIER) && !check(EOF)) {
+            if (match(RW)) {
+                // Parse rW[...] water array
+                consume(LEFT_BRACKET, "Expect '[' after 'rW'.");
+                List<Expr> waterValues = new ArrayList<>();
+
+                if (!check(RIGHT_BRACKET)) {
+                    do {
+                        waterValues.add(expression());
+                    } while (match(COMMA));
+                }
+
+                consume(RIGHT_BRACKET, "Expect ']' after water array.");
+                properties.add(new Expr.Array(waterValues));
+            } else if (match(T, A)) {
+                // Parse T(...) or A(...) function calls
+                Token funcName = previous();
+                consume(LEFT_PAREN, "Expect '(' after '" + funcName.lexeme + "'.");
+
+                List<Expr> arguments = new ArrayList<>();
+                if (!check(RIGHT_PAREN)) {
+                    do {
+                        arguments.add(expression());
+                    } while (match(COMMA));
+                }
+
+                consume(RIGHT_PAREN, "Expect ')' after arguments.");
+                properties.add(new Expr.FunctionCall(funcName, arguments));
+            } else {
+                break; // No more properties
+            }
+        }
+
+        return new Stmt.RiverDef(name, flowType, properties);
+    }
+
     private Stmt statement() {
         if (match(IF)) return ifStatement();
         if (match(PRINT)) return printStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
-
         return expressionStatement();
     }
 
@@ -128,18 +188,34 @@ class Parser {
     }
 
     private Expr and() {
-        Expr expr = equality();
+        Expr expr = riverJoin(); // Handle & operator for river joins
 
         while (match(AND)) {
             Token operator = previous();
-            Expr right = equality();
+            Expr right = riverJoin();
             expr = new Expr.Logical(expr, operator, right);
         }
 
         return expr;
     }
 
+    // Handle river joins with & operator
+    private Expr riverJoin() {
+        Expr expr = equality();
 
+        if (match(AMPERSAND)) {
+            List<Expr> rivers = new ArrayList<>();
+            rivers.add(expr);
+
+            do {
+                rivers.add(equality());
+            } while (match(AMPERSAND));
+
+            return new Expr.RiverJoin(rivers);
+        }
+
+        return expr;
+    }
 
     private Expr equality() {
         Expr expr = comparison();
@@ -207,8 +283,23 @@ class Parser {
         if (match(NUMBER, STRING)) {
             return new Expr.Literal(previous().literal);
         }
+
         if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
+        }
+
+        // Handle arrays [...]
+        if (match(LEFT_BRACKET)) {
+            List<Expr> elements = new ArrayList<>();
+
+            if (!check(RIGHT_BRACKET)) {
+                do {
+                    elements.add(expression());
+                } while (match(COMMA));
+            }
+
+            consume(RIGHT_BRACKET, "Expect ']' after array elements.");
+            return new Expr.Array(elements);
         }
 
         if (match(LEFT_PAREN)) {
@@ -220,7 +311,16 @@ class Parser {
         throw error(peek(), "Expect expression.");
     }
 
-
+    // Helper method to check tokens ahead
+    private boolean checkAhead(int distance, TokenType... types) {
+        for (TokenType type : types) {
+            if (current + distance < tokens.size() &&
+                    tokens.get(current + distance).type == type) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
@@ -229,13 +329,11 @@ class Parser {
                 return true;
             }
         }
-
         return false;
     }
 
     private Token consume(TokenType type, String message) {
         if (check(type)) return advance();
-
         throw error(peek(), message);
     }
 
@@ -260,6 +358,7 @@ class Parser {
     private Token previous() {
         return tokens.get(current - 1);
     }
+
     private ParseError error(Token token, String message) {
         kimLox.error(token, message);
         return new ParseError();
@@ -286,8 +385,4 @@ class Parser {
             advance();
         }
     }
-
-
-
 }
-

@@ -11,6 +11,10 @@ abstract class Expr {
     R visitLogicalExpr(Logical expr);
     R visitUnaryExpr(Unary expr);
     R visitVariableExpr(Variable expr);
+    R visitArrayExpr(Array expr);
+    R visitFunctionCallExpr(FunctionCall expr);
+    R visitFlowExprExpr(FlowExpr expr);
+    R visitRiverJoinExpr(RiverJoin expr);
   }
   static class Assign extends Expr {
     Assign(Token name, Expr value) {
@@ -107,6 +111,58 @@ abstract class Expr {
     }
 
     final Token name;
+  }
+  static class Array extends Expr {
+    Array(List<Expr> elements) {
+      this.elements = elements;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitArrayExpr(this);
+    }
+
+    final List<Expr> elements;
+  }
+  static class FunctionCall extends Expr {
+    FunctionCall(Token name, List<Expr> arguments) {
+      this.name = name;
+      this.arguments = arguments;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitFunctionCallExpr(this);
+    }
+
+    final Token name;
+    final List<Expr> arguments;
+  }
+  static class FlowExpr extends Expr {
+    FlowExpr(Token operator, Expr operand) {
+      this.operator = operator;
+      this.operand = operand;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitFlowExprExpr(this);
+    }
+
+    final Token operator;
+    final Expr operand;
+  }
+  static class RiverJoin extends Expr {
+    RiverJoin(List<Expr> rivers) {
+      this.rivers = rivers;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitRiverJoinExpr(this);
+    }
+
+    final List<Expr> rivers;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

@@ -12,6 +12,7 @@ class Scanner {
     private static final Map<String, TokenType> keywords;
     static {
         keywords = new HashMap<>();
+        // Original Lox keywords
         keywords.put("and",    AND);
         keywords.put("class",  CLASS);
         keywords.put("else",   ELSE);
@@ -28,7 +29,15 @@ class Scanner {
         keywords.put("true",   TRUE);
         keywords.put("var",    VAR);
         keywords.put("while",  WHILE);
+
+        // Water flow keywords
+        keywords.put("River",  RIVER);
+        keywords.put("Dam",    DAM);
+        keywords.put("rW",     RW);
+        keywords.put("T",      T);
+        keywords.put("A",      A);
     }
+
     private final String source;
     private final List<Token> tokens = new ArrayList<>();
     private int start = 0;
@@ -57,12 +66,17 @@ class Scanner {
             case ')': addToken(RIGHT_PAREN); break;
             case '{': addToken(LEFT_BRACE); break;
             case '}': addToken(RIGHT_BRACE); break;
+            case '[': addToken(LEFT_BRACKET); break;  // Added for arrays
+            case ']': addToken(RIGHT_BRACKET); break; // Added for arrays
             case ',': addToken(COMMA); break;
             case '.': addToken(DOT); break;
             case '-': addToken(MINUS); break;
             case '+': addToken(PLUS); break;
             case ';': addToken(SEMICOLON); break;
             case '*': addToken(STAR); break;
+            case '^': addToken(ROOT); break;         // Root river operator
+            case '&': addToken(AMPERSAND); break;     // River join operator
+            case '@': addToken(AT); break;            // Flow notation
             case '!':
                 addToken(match('=') ? BANG_EQUAL : BANG);
                 break;
@@ -94,16 +108,16 @@ class Scanner {
                 line++;
                 break;
 
-            case '"': string();
-            break;
+            case '"': string(); break;
+
             default:
-            if (isDigit(c)) {
-                number();
-            } else if (isAlpha(c)) {
-                identifier();
-            } else {
-                kimLox.error(line, "Unexpected character.");
-            }
+                if (isDigit(c)) {
+                    number();
+                } else if (isAlpha(c)) {
+                    identifier();
+                } else {
+                    kimLox.error(line, "Unexpected character.");
+                }
         }
     }
 
@@ -130,8 +144,6 @@ class Scanner {
         addToken(NUMBER,
                 Double.parseDouble(source.substring(start, current)));
     }
-
-
 
     private void string() {
         while (peek() != '"' && !isAtEnd()) {

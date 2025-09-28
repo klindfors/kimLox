@@ -12,27 +12,32 @@ public class GenerateAst {
             System.exit(64);
         }
         String outputDir = args[0];
-        defineAst(outputDir, "Expr", Arrays.asList(
-                "Assign   : Token name, Expr value",
-                "Binary   : Expr left, Token operator, Expr right",
-                "Grouping : Expr expression",
-                "Literal  : Object value",
-                "Logical  : Expr left, Token operator, Expr right",
-                "Unary    : Token operator, Expr right",
-                "Variable : Token name"
 
+        // Define expressions for water flow language
+        defineAst(outputDir, "Expr", Arrays.asList(
+                "Assign      : Token name, Expr value",
+                "Binary      : Expr left, Token operator, Expr right",
+                "Grouping    : Expr expression",
+                "Literal     : Object value",
+                "Logical     : Expr left, Token operator, Expr right",
+                "Unary       : Token operator, Expr right",
+                "Variable    : Token name",
+                "Array       : List<Expr> elements",
+                "FunctionCall: Token name, List<Expr> arguments",
+                "FlowExpr    : Token operator, Expr operand",
+                "RiverJoin   : List<Expr> rivers"
         ));
 
+        // Define statements for water flow language
         defineAst(outputDir, "Stmt", Arrays.asList(
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
-                "If         : Expr condition, Stmt thenBranch," +
-                            " Stmt elseBranch",
+                "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
                 "Print      : Expr expression",
-                "Var        : Token name, Expr initializer"
+                "Var        : Token name, Expr initializer",
+                "While      : Expr condition, Stmt body",
+                "RiverDef   : Token name, Expr flowType, List<Expr> properties"
         ));
-
-
     }
 
     private static void defineAst(
@@ -46,9 +51,11 @@ public class GenerateAst {
         writer.println("import java.util.List;");
         writer.println();
         writer.println("abstract class " + baseName + " {");
-        //visitor definition
+
+        // Visitor definition
         defineVisitor(writer, baseName, types);
-        //the AST classes
+
+        // The AST classes
         for (String type : types) {
             String className = type.split(":")[0].trim();
             String fields = type.split(":")[1].trim();
@@ -110,5 +117,4 @@ public class GenerateAst {
 
         writer.println("  }");
     }
-
 }

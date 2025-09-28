@@ -1,0 +1,109 @@
+//root rivers 
+googong ^ rW[11.4, 11.5, 0, 0, 0, 0, 0, 0, 0, 0] T(0.56) A(45)
+jerra ^ rW[5.2, 3.1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.42) A(25)
+upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35)
+quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15)
+
+//dam from googong has slower drainage
+dam_1  googong rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.8) A(5)
+
+//central river combining multiple upstream sources
+central_molo  (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20)
+
+//final outflow combining dam and central river flows
+ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10)
+
+/** these commands can typed in the prompt
+
+water status
+=== Day 0 River System Status ===
+River{googong, flow=12.70, terrain=0.56, area=45.00}
+River{jerra, flow=3.56, terrain=0.42, area=25.00}
+River{upper_molo, flow=7.54, terrain=0.51, area=35.00}
+River{quean, flow=1.49, terrain=0.38, area=15.00}
+River{dam_1, flow=0.00, terrain=0.80, area=5.00}
+River{central_molo, flow=0.00, terrain=0.45, area=20.00}
+River{final_outlet, flow=0.00, terrain=0.60, area=10.00}
+
+water rain googong 25
+Added 25.0mm rainfall to googong
+
+water rain jerra 15
+Added 15.0mm rainfall to jerra
+
+water rain upper_molo 20
+Added 20.0mm rainfall to upper_molo
+
+water rain quean 10
+Added 10.0mm rainfall to quean
+
+water status
+=== Day 0 River System Status ===
+River{googong, flow=701.70, terrain=0.56, area=45.00}
+River{jerra, flow=161.06, terrain=0.42, area=25.00}
+River{upper_molo, flow=707.54, terrain=0.51, area=35.00}
+River{quean, flow=58.99, terrain=0.38, area=15.00}
+River{dam_1, flow=0.00, terrain=0.80, area=5.00}
+River{central_molo, flow=0.00, terrain=0.45, area=20.00}
+River{final_outlet, flow=0.00, terrain=0.60, area=10.00}
+
+water simulate
+Simulation complete.
+
+water status
+=== Day 1 River System Status ===
+River{googong, flow=562.36, terrain=0.56, area=45.00}
+River{jerra, flow=129.25, terrain=0.42, area=25.00}
+River{upper_molo, flow=567.81, terrain=0.51, area=35.00}
+River{quean, flow=47.31, terrain=0.38, area=15.00}
+River{dam_1, flow=0.00, terrain=0.80, area=5.00}
+River{central_molo, flow=0.00, terrain=0.45, area=20.00}
+River{final_outlet, flow=0.00, terrain=0.60, area=10.00}
+
+water simulate 5
+--- Day 1 ---
+--- Day 2 ---
+--- Day 3 ---
+--- Day 4 ---
+--- Day 5 ---
+Simulation complete.
+
+water flow googong
+googong current flow 179.25 Ls
+Water array [451.89, 562.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+Terrain factor 0.56
+Catchment area 45.0 hectares
+Inflows from none
+
+water flow central_molo
+central_molo current flow 0.00 Ls
+Water array [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+Terrain factor 0.45
+Catchment area 20.0 hectares
+Inflows from jerra, upper_molo, quean
+
+water rain central_molo 30
+Added 30.0mm rainfall to central_molo
+
+water rain googong 50
+Added 50.0mm rainfall to googong
+
+water simulate 3
+--- Day 1 ---
+--- Day 2 ---
+--- Day 3 ---
+Simulation complete.
+
+water status
+
+water help
+Available commands
+  status                    - Show current system status
+  rain river amount     - Add rainfall to a river
+  simulate                  - Run one day of simulation
+  simulate days           - Run multiple days
+  flow river              - Show flow for specific river
+  help                      - Show this help
+  exit                      - Exit simulation
+
+water exit

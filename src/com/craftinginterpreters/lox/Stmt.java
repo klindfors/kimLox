@@ -9,6 +9,8 @@ abstract class Stmt {
     R visitIfStmt(If stmt);
     R visitPrintStmt(Print stmt);
     R visitVarStmt(Var stmt);
+    R visitWhileStmt(While stmt);
+    R visitRiverDefStmt(RiverDef stmt);
   }
   static class Block extends Stmt {
     Block(List<Stmt> statements) {
@@ -75,6 +77,36 @@ abstract class Stmt {
 
     final Token name;
     final Expr initializer;
+  }
+  static class While extends Stmt {
+    While(Expr condition, Stmt body) {
+      this.condition = condition;
+      this.body = body;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitWhileStmt(this);
+    }
+
+    final Expr condition;
+    final Stmt body;
+  }
+  static class RiverDef extends Stmt {
+    RiverDef(Token name, Expr flowType, List<Expr> properties) {
+      this.name = name;
+      this.flowType = flowType;
+      this.properties = properties;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitRiverDefStmt(this);
+    }
+
+    final Token name;
+    final Expr flowType;
+    final List<Expr> properties;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

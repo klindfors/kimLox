@@ -1,0 +1,3 @@
+speedyriver ^ rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.9) A(40)
+slowriver ^ rW[2, 1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.2) A(40)
+outflowocean < (rocky_peak & clay_slope) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.5) A(25)
