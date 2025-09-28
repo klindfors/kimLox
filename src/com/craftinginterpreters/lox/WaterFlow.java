@@ -10,7 +10,7 @@ class WaterFlow {
     static class River {
         final String name;
         final FlowType flowType;
-        final List<Double> waterArray;  //rW[...] - rainwater from last 10 days!
+        final List<Double> waterArray;  //rW[...] - rainwater from last 10 days
         final double terrainType;       //T(...) - terrain type, affects drain rate of water in cathcment area
         final double catchmentArea;     //A(...) - size of the area, affects drain rate
         final List<River> inflows;
@@ -44,10 +44,8 @@ class WaterFlow {
                 totalFlow += waterAmount * recencyWeight;
             }
 
-            // Apply area effect: larger catchment can channel more flow
             double areaFlowMultiplier = Math.log(1 + catchmentArea / 10.0);
 
-            // Terrain affects flow speed but not the drainage calculation
             double terrainFlowMultiplier = 0.8 + (terrainType * 0.4); // 0.8 to 1.2
 
             return totalFlow * areaFlowMultiplier * terrainFlowMultiplier;
@@ -60,52 +58,37 @@ class WaterFlow {
             if (waterArray.size() >= 10) {
                 waterArray.remove(0);
             }
-            // Just add rainfall amount - no area multiplication
+
             waterArray.add(rainfall);
         }
-
-
 
         void drainTerrain() {
             for (int i = 0; i < waterArray.size(); i++) {
                 double currentWater = waterArray.get(i);
                 if (currentWater <= 0) continue;
-
                 double drainageRate = calculateDrainageRate(i);
                 double remainingWater = currentWater * (1.0 - drainageRate);
-
                 waterArray.set(i, Math.max(0, remainingWater));
             }
         }
-
-        // In the River class, ADD this new method:
         private double calculateDrainageRate(int dayIndex) {
-            // dayIndex: 0 = most recent, 9 = oldest (10th day)
+            //dayIndex: 0 = most recent, 9 = oldest (10th day)
 
-            // Force complete drainage on day 10 (index 9)
+            //force complete drainage on day 10 (index 9)
             if (dayIndex == 9) {
-                return 1.0; // Drain 100%
+                return 1.0;
             }
 
-            // Calculate base drainage that ensures 10-day rule
-            // We need a formula where cumulative drainage over 10 days = 100%
-            // Using exponential decay: each day drains a percentage
+            double baseRate = 0.15;
 
-            // Base rate ensures water is mostly gone by day 9
-            double baseRate = 0.15; // 15% per day base
-
-            // Age factor: older water drains faster
             double ageFactor = 1.0 + (dayIndex * 0.1); // 1.0 to 1.9 multiplier
 
-            // Area factor: larger area = slower drainage (inverse relationship)
+            //rea factor: larger area = slower drainage (inverse relationship)
             double areaFactor = 50.0 / (50.0 + catchmentArea); // Normalize around 50 hectares
 
-            // Terrain factor: more stony (higher value) = faster drainage
+            //terrain factor: more stony (higher value) = faster drainage
             double terrainFactor = 1.0 + terrainType; // 1.0 to 2.0 multiplier
-
             double finalRate = baseRate * ageFactor * areaFactor * terrainFactor;
-
-            // Cap at 95% to prevent complete drainage before day 10
             return Math.min(0.95, finalRate);
         }
 
@@ -177,12 +160,8 @@ class WaterFlow {
 
                 }
             }
-
             printSystemStatus();
-
-
         }
-
         void printSystemStatus() {
             System.out.println("~*~*~ Day " + currentDay + " River System Status ~*~*~");
             for (River river : rivers) {
@@ -194,7 +173,6 @@ class WaterFlow {
             return new ArrayList<>(rivers);
         }
     }
-
     //rainfall event on a specific river/catchment area
 
     static class RainfallEvent {

@@ -16,12 +16,11 @@ public class FlowMain {
     static boolean hadRuntimeError = false;
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Flow Language Interpreter ===");
-        System.out.println("Based on your kLox river  language");
+        System.out.println("Waterflow Interpreter");
         System.out.println();
 
         if (args.length > 1) {
-            System.out.println("Usage: java FlowMain [script]");
+            System.out.println("Usage: java FlowMain [exampleprogram]");
             System.exit(64);
         } else if (args.length == 1) {
             runFile(args[0]);
@@ -143,7 +142,7 @@ public class FlowMain {
                         // Status is now printed automatically by simulateDay()
                     }
                     System.out.println("Simulation complete.");
-                    
+
                 } else {
                     System.out.println("No river system defined.");
                 }

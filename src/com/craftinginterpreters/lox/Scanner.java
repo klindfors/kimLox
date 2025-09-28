@@ -69,11 +69,7 @@ class Scanner {
             case '[': addToken(LEFT_BRACKET); break;  // Added for arrays
             case ']': addToken(RIGHT_BRACKET); break; // Added for arrays
             case ',': addToken(COMMA); break;
-            case '.': addToken(DOT); break;
-            case '-': addToken(MINUS); break;
-            case '+': addToken(PLUS); break;
             case ';': addToken(SEMICOLON); break;
-            case '*': addToken(STAR); break;
             case '^': addToken(ROOT); break;         // Root river operator
             case '&': addToken(AMPERSAND); break;     // River join operator
             case '@': addToken(AT); break;            // Flow notation
