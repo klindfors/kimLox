@@ -1,6 +1,7 @@
 package com.craftinginterpreters.lox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.craftinginterpreters.lox.TokenType.*;
@@ -45,11 +46,13 @@ class Parser {
         }
     }
 
-    // Parse river declarations like: googong ^ rW[...] T(...) A(...)
+    //parse dam declaration
+
+    //parse river declarations like: googong ^ rW[...] T(...) A(...)
     private Stmt riverDeclaration() {
         Token name = consume(IDENTIFIER, "Expect river name.");
 
-        // Parse flow type (^, <, >)
+        //parse flow type (^, <, >)
         Expr flowType = null;
         if (match(ROOT, LESS, GREATER)) {
             Token operator = previous();
@@ -102,10 +105,19 @@ class Parser {
     }
 
     private Stmt statement() {
-
+        if (match(FOR)) return forStatement();
+        if (match(IF)) return ifStatement(); //possibly put back IF
         if (match(PRINT)) return printStatement();
+        if (match(WHILE)) return whileStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
         return expressionStatement();
+    }
+
+    private Stmt forStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'for'.");
+
+        // More here...
+      
     }
 
     private Stmt ifStatement() {
@@ -138,6 +150,15 @@ class Parser {
 
         consume(SEMICOLON, "Expect ';' after variable declaration.");
         return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt whileStatement() {
+        consume(LEFT_PAREN, "Expect '(' after 'while'.");
+        Expr condition = expression();
+        consume(RIGHT_PAREN, "Expect ')' after condition.");
+        Stmt body = statement();
+
+        return new Stmt.While(condition, body);
     }
 
     private Stmt expressionStatement() {
@@ -311,7 +332,7 @@ class Parser {
         throw error(peek(), "Expect expression.");
     }
 
-    // Helper method to check tokens ahead
+    // helper method to check tokens ahead
     private boolean checkAhead(int distance, TokenType... types) {
         for (TokenType type : types) {
             if (current + distance < tokens.size() &&

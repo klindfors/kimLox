@@ -99,6 +99,8 @@ abstract class Stmt {
       this.properties = properties;
     }
 
+    //define dams
+
     @Override
     <R> R accept(Visitor<R> visitor) {
       return visitor.visitRiverDefStmt(this);

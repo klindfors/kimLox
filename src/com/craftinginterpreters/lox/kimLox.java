@@ -55,7 +55,7 @@ public class kimLox {
 
         // Stop if there was a syntax error.
         if (hadError) return;
-        interpreter.interpret(statements);
+        interpreter.interpret(statements); //expression
     }
 
     static void error(int line, String message) {

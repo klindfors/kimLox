@@ -25,7 +25,7 @@ public class GenerateAst {
                 "Array       : List<Expr> elements",
                 "FunctionCall: Token name, List<Expr> arguments",
                 "FlowExpr    : Token operator, Expr operand",
-                "RiverJoin   : List<Expr> rivers"
+                "gitJoin   : List<Expr> rivers"
         ));
 
         // Define statements for water flow language

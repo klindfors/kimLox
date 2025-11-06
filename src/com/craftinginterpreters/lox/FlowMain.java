@@ -37,7 +37,7 @@ public class FlowMain {
         if (hadError) System.exit(65);
         if (hadRuntimeError) System.exit(70);
 
-        // After running file, enter interactive mode
+        //after running file, enter interactive mode
         if (!hadError && !hadRuntimeError) {
             riverSystem = interpreter.getRiverSystem();
             runInteractiveSimulation();
