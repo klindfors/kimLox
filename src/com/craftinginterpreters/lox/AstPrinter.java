@@ -74,7 +74,7 @@ class AstPrinter implements Expr.Visitor<String> {
     }
 
     @Override
-    public String visitRiverJoinExpr(Expr.RiverJoin expr) {
+    public String visitRiverJoinExpr(Expr.riverJoin expr) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < expr.rivers.size(); i++) {
             if (i > 0) builder.append(" & ");

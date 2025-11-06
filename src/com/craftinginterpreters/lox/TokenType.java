@@ -23,7 +23,7 @@ enum TokenType {
     // Water flow key
     RIVER, DAM, RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
 
-        AND, CLASS, ELSE, FALSE, FUN, NIL, OR,
+        AND, CLASS, ELSE, FALSE, IF, FOR, FUN, NIL, OR,
     PRINT, RETURN, TRUE, VAR, WHILE,
 
     EOF

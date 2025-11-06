@@ -262,7 +262,7 @@ class Parser {
                 rivers.add(equality());
             } while (match(AMPERSAND));
 
-            return new Expr.RiverJoin(rivers);
+            return new Expr.riverJoin(rivers);
         }
 
         return expr;

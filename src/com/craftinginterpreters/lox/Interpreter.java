@@ -6,7 +6,7 @@ import java.util.List;
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private Environment environment = new Environment();
-    private WaterFlow.RiverSystem riverSystem = new WaterFlow.RiverSystem();
+    private final WaterFlow.RiverSystem riverSystem = new WaterFlow.RiverSystem();
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
@@ -154,8 +154,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     // Handle river connections (& combinations)
     private void handleRiverConnections(WaterFlow.River downstreamRiver, Expr connectionExpr) {
-        if (connectionExpr instanceof Expr.RiverJoin) {
-            Expr.RiverJoin joinExpr = (Expr.RiverJoin) connectionExpr;
+        if (connectionExpr instanceof Expr.riverJoin) {
+            Expr.riverJoin joinExpr = (Expr.riverJoin) connectionExpr;
             for (Expr riverExpr : joinExpr.rivers) {
                 if (riverExpr instanceof Expr.Variable) {
                     String upstreamName = ((Expr.Variable) riverExpr).name.lexeme;
@@ -334,7 +334,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     // NEW: Handle river joins (&)
     @Override
-    public Object visitRiverJoinExpr(Expr.RiverJoin expr) {
+    public Object visitRiverJoinExpr(Expr.riverJoin expr) {
         List<String> riverNames = new ArrayList<>();
         for (Expr riverExpr : expr.rivers) {
             if (riverExpr instanceof Expr.Variable) {

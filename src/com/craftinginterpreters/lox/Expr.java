@@ -14,7 +14,7 @@ abstract class Expr {
     R visitArrayExpr(Array expr);
     R visitFunctionCallExpr(FunctionCall expr);
     R visitFlowExprExpr(FlowExpr expr);
-    R visitRiverJoinExpr(RiverJoin expr);
+    R visitRiverJoinExpr(riverJoin expr);
   }
   static class Assign extends Expr {
     Assign(Token name, Expr value) {
@@ -152,13 +152,10 @@ abstract class Expr {
     final Token operator;
     final Expr operand;
   }
-  static class RiverJoin extends Expr {
-    RiverJoin(List<Expr> rivers) {
+  static class riverJoin extends Expr {
+    riverJoin(List<Expr> rivers) {
       this.rivers = rivers;
     }
-
-
-    //dam threshold
 
     @Override
     <R> R accept(Visitor<R> visitor) {
