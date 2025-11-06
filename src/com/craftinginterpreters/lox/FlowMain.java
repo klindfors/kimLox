@@ -56,17 +56,14 @@ public class FlowMain {
             if (line == null) break;
             systemDefinition.append(line).append("\n");
         }
-
         if (systemDefinition.length() > 0) {
             run(systemDefinition.toString());
             riverSystem = interpreter.getRiverSystem();
         }
-
         if (!hadError && !hadRuntimeError) {
             runInteractiveSimulation();
         }
     }
-
     private static void runInteractiveSimulation() throws IOException {
         System.out.println("\n~*~*~ Interactive River Flow Simulator ~*~*~");
         System.out.println("Available commands:");
@@ -192,19 +189,15 @@ public class FlowMain {
                 break;
         }
     }
-
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
-
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
-
         // Stop if there was a syntax error.
         if (hadError) return;
-
         interpreter.interpret(statements);
-    }
+    } //kolla om det finns några errors, annars kör i vind.
 
     static void error(int line, String message) {
         report(line, "", message);
