@@ -15,6 +15,8 @@ class AstPrinter implements Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.left, expr.right);
     }
 
+
+
     @Override
     public String visitGroupingExpr(Expr.Grouping expr) {
         return parenthesize("group", expr.expression);
@@ -74,7 +76,7 @@ class AstPrinter implements Expr.Visitor<String> {
     }
 
     @Override
-    public String visitRiverJoinExpr(Expr.riverJoin expr) {
+    public String visitRiverJoinExpr(Expr.RiverJoin expr) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < expr.rivers.size(); i++) {
             if (i > 0) builder.append(" & ");
