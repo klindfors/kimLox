@@ -1,0 +1,1 @@
+A project of exploring Interpreters during my exchange semester. I made my own dialect of Lox, with the purpose of simulating waterflow in river systems with dams, rainfall and terrain with different levels of water retainment.
