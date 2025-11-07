@@ -138,7 +138,7 @@ public class FlowMain {
                         riverSystem.simulateDay(new ArrayList<>());
                         // Status is now printed automatically by simulateDay()
                     }
-                    System.out.println("Simulation complete.");
+                    riverSystem.printSystemStatus();
 
                 } else {
                     System.out.println("No river system defined.");
@@ -189,6 +189,39 @@ public class FlowMain {
                 break;
         }
     }
+
+
+    private static void printDailyFlows(int day) {
+        System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+        System.out.println("Day " + day + " results:");
+        System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+
+        if (riverSystem == null) {
+            System.out.println("No river system defined.");
+            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+            return;
+        }
+
+        // Print all river flows
+        System.out.println("Rivers:");
+        for (WaterFlow.River river : riverSystem.getRivers()) {
+            System.out.printf("  %-12s : %.2f L/s%n", river.name, river.getCurrentFlow());
+        }
+
+        // Print all dam flows
+        if (riverSystem.getDams() != null && !riverSystem.getDams().isEmpty()) {
+            System.out.println("\nDams:");
+            for (WaterFlow.Dam dam : riverSystem.getDams()) {
+                System.out.printf("  %-12s : %.2f L/s (storage %.2f / %.2f)%n",
+                        dam.name, dam.getOutflow());
+            }
+        }
+
+        System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+        System.out.println();
+    }
+
+
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();

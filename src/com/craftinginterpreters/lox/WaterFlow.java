@@ -109,6 +109,11 @@ class WaterFlow {
         double capacity;
         double opening;
         double storage = 0.0;
+        double outflow;
+
+        double getOutflow(){
+            return this.outflow;
+        }
 
         Dam(String name, String inflow, double threshold, double capacity, double opening) {
             this.name = name;
@@ -116,6 +121,7 @@ class WaterFlow {
             this.threshold = threshold;
             this.capacity = capacity;
             this.opening = opening;
+
         }
 
         double computeOutflow(double inflowValue) {
@@ -128,33 +134,34 @@ class WaterFlow {
             double outflow = opening * storage;
             storage -= outflow;
             if (storage < 0) storage = 0;
+            this.outflow=outflow;
             return outflow;
         }
     }
 
-    /**
-     * Types of flow operators
-     */
-    enum FlowType {
+      enum FlowType {
         ROOT,        // ^ - root river (no inflows, only rain)
         UPSTREAM,    // < - receives from upstream
         DOWNSTREAM   // > - flows to downstream (less common)
     }
 
-    /**
-     * Represents the entire river system
-     */
     static class RiverSystem {
         private final List<River> rivers;
+        private final List<Dam> dams;
         private int currentDay;
 
         RiverSystem() {
             this.rivers = new ArrayList<>();
+            this.dams = new ArrayList<>();
             this.currentDay = 0;
         }
 
         void addRiver(River river) {
             rivers.add(river);
+        }
+
+        void addDam(Dam dam) {
+            dams.add(dam);
         }
 
         River findRiver(String name) {
@@ -166,11 +173,19 @@ class WaterFlow {
             return null;
         }
 
-        // simulate one day of the whole river system
+        Dam findDam(String name) {
+            for (Dam dam : dams) {
+                if (dam.name.equals(name)) {
+                    return dam;
+                }
+            }
+            return null;
+        }
+
         void simulateDay(List<RainfallEvent> rainfallEvents) {
             currentDay++;
 
-            // 1. rain event happens
+            // Apply rainfall to relevant rivers
             for (RainfallEvent event : rainfallEvents) {
                 River river = findRiver(event.riverName);
                 if (river != null) {
@@ -178,33 +193,65 @@ class WaterFlow {
                 }
             }
 
-            // 2. drain terrain water into the river
+            // Drain terrain water for all rivers
             for (River river : rivers) {
                 river.drainTerrain();
             }
-
-            // 3. water flows downstream
-            for (River river : rivers) {
-                if (river.outflow != null) {
-                    double flow = river.getCurrentFlow();
-
-                }
-            }
+            simulateDamFlows();
             printSystemStatus();
         }
-        void printSystemStatus() {
-            System.out.println("~*~*~ Day " + currentDay + " River System Status ~*~*~");
-            for (River river : rivers) {
-                System.out.println(river);
+        void simulateDamFlows() {
+            for (Dam dam : dams) {
+                // Find the river that feeds this dam
+                River inflowRiver = findRiver(dam.inflow);
+
+                if (inflowRiver == null) {
+                    System.out.println("Warning: Inflow river '" + dam.inflow + "' for dam " + dam.name + " not found.");
+                    continue;
+                }
+
+                double inflowValue = inflowRiver.getCurrentFlow();
+                double outflowValue = dam.computeOutflow(inflowValue);
+
+                System.out.printf(
+                        "Dam %-10s | Inflow: %-8.2f | Outflow: %-8.2f | Storage: %-8.2f%n",
+                        dam.name, inflowValue, outflowValue, dam.storage
+                );
             }
+        }
+
+        public void printSystemStatus() {
+            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+            System.out.println("~*~*~ Day " + currentDay + " Water System Status ~*~*~");
+
+            System.out.println("\nRivers:");
+            for (River river : rivers) {
+                System.out.println("  " + river);
+            }
+
+            System.out.println("\nDams:");
+            if (dams.isEmpty()) {
+                System.out.println("  (none)");
+            } else {
+                for (Dam dam : dams) {
+                    System.out.printf("  Dam{%s, inflow=%s, storage=%.2f, capacity=%.2f, opening=%.2f}%n",
+                            dam.name, dam.inflow, dam.storage, dam.capacity, dam.opening);
+                }
+            }
+
+            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
         }
 
         List<River> getRivers() {
             return new ArrayList<>(rivers);
         }
-    }
-    //rainfall event on a specific river/catchment area
 
+        List<Dam> getDams() {
+            return new ArrayList<>(dams);
+        }
+    }
+
+    //rainfall event on a specific river/catchment area
     static class RainfallEvent {
         final String riverName;
         final double amount;

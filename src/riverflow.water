@@ -1,17 +1,16 @@
 //root rivers 
-googong ^ rW[11.4, 11.5, 0, 0, 0, 0, 0, 0, 0, 0] T(0.56) A(45)
-jerra ^ rW[5.2, 3.1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.42) A(25)
-upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35)
-quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15)
+R googong ^ rW[11.4, 11.5, 0, 0, 0, 0, 0, 0, 0, 0] T(0.56) A(45)
+R jerra ^ rW[5.2, 3.1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.42) A(25)
+R upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35)
+R quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15)
 
 //dam from googong has slower drainage
-dam_1  googong rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.8) A(5)
-
+D dam_1 < googong Thr(25) Cap(50) O(0.2)
 //central river combining multiple upstream sources
-central_molo  (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20)
+R central_molo  (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20)
 
 //final outflow combining dam and central river flows
-ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10)
+R ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10)
 
 /** these commands can typed in the prompt
 

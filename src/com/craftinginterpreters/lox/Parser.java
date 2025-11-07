@@ -34,10 +34,10 @@ class Parser {
 
     private Stmt declaration() {
         try {
-            if (check(IDENTIFIER) && peek().lexeme.equals("R")) {
+            if (match(IDENTIFIER) && previous().lexeme.equals("R")) {
                 return riverDeclaration();
             }
-            if (check(IDENTIFIER) && peek().lexeme.equals("D")) {
+            if (match(IDENTIFIER) && previous().lexeme.equals("D")) {
                 return damDeclaration();
             }
             if (match(FUN)) return function("function");
@@ -291,7 +291,7 @@ class Parser {
 
     private Stmt expressionStatement() {
         Expr expr = expression();
-        consume(SEMICOLON, "Expect ';' after expression.");
+        // consume(SEMICOLON, "Expect ';' after expression."); absolutely no semicolons.
         return new Stmt.Expression(expr);
     }
 
