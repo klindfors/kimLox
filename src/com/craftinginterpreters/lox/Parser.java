@@ -54,14 +54,16 @@ class Parser {
         if (match(ROOT, LESS, GREATER)) {
             Token operator = previous();
             Expr operand = null;
-
-            //handle river combinations like: < (jerra & upper_molo & quean)
-            if (match(LEFT_PAREN)) {
-                operand = expression(); // parse the whole expression inside (...)
+            if (operator.type == ROOT) {
+                // root rivers don’t have an inflow
+                operand = null;
+            } else if (match(LEFT_PAREN)) {
+                operand = expression();
                 consume(RIGHT_PAREN, "Expect ')' after inflow expression.");
             } else {
                 operand = expression();
             }
+
             flowType = new Expr.FlowExpr(operator, operand);
         }
 
@@ -99,7 +101,7 @@ class Parser {
                 break; // No more properties
             }
         }
-
+        consume(SEMICOLON, "Expect ';' after river declaration.");
         return new Stmt.RiverDef(name, flowType, properties);
     }
 

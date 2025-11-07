@@ -148,7 +148,10 @@ class WaterFlow {
     static class RiverSystem {
         private final List<River> rivers;
         private final List<Dam> dams;
+        private List<RainfallEvent> lastRainfallEvents = new ArrayList<>();
+
         private int currentDay;
+
 
         RiverSystem() {
             this.rivers = new ArrayList<>();
@@ -185,6 +188,9 @@ class WaterFlow {
         void simulateDay(List<RainfallEvent> rainfallEvents) {
             currentDay++;
 
+            // Store this day's rainfall events for status printing
+            lastRainfallEvents = new ArrayList<>(rainfallEvents);
+
             // Apply rainfall to relevant rivers
             for (RainfallEvent event : rainfallEvents) {
                 River river = findRiver(event.riverName);
@@ -192,14 +198,13 @@ class WaterFlow {
                     river.addRainfall(event.amount);
                 }
             }
-
-            // Drain terrain water for all rivers
             for (River river : rivers) {
                 river.drainTerrain();
             }
             simulateDamFlows();
             printSystemStatus();
         }
+
         void simulateDamFlows() {
             for (Dam dam : dams) {
                 // Find the river that feeds this dam
@@ -221,25 +226,42 @@ class WaterFlow {
         }
 
         public void printSystemStatus() {
-            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+            System.out.println("\n~*~*~*~*~*~*~*~*~*~*~*~*~");
             System.out.println("~*~*~ Day " + currentDay + " Water System Status ~*~*~");
 
-            System.out.println("\nRivers:");
-            for (River river : rivers) {
-                System.out.println("  " + river);
+
+            System.out.println("\nRainfall Events:");
+            if (lastRainfallEvents.isEmpty()) {
+                System.out.println("  No rainfall recorded today.");
+            } else {
+                for (RainfallEvent e : lastRainfallEvents) {
+                    System.out.printf("  %-15s received %.2f mm%n", e.riverName, e.amount);
+                }
             }
 
+            // 💧 River Info
+            System.out.println("\nRivers:");
+            for (River river : rivers) {
+                System.out.printf("  %-15s | Flow: %-8.2f | Terrain: %-4.2f | Area: %-5.2f%n",
+                        river.name, river.getCurrentFlow(), river.terrainType, river.catchmentArea);
+            }
+
+            // 🧱 Dam Info
             System.out.println("\nDams:");
             if (dams.isEmpty()) {
                 System.out.println("  (none)");
             } else {
                 for (Dam dam : dams) {
-                    System.out.printf("  Dam{%s, inflow=%s, storage=%.2f, capacity=%.2f, opening=%.2f}%n",
-                            dam.name, dam.inflow, dam.storage, dam.capacity, dam.opening);
+                    River inflowRiver = findRiver(dam.inflow);
+                    double inflowValue = inflowRiver != null ? inflowRiver.getCurrentFlow() : 0.0;
+                    System.out.printf(
+                            "  Dam %-12s | Inflow: %-8.2f | Outflow: %-8.2f | Storage: %-8.2f | Cap: %-6.2f | Open: %-4.2f%n",
+                            dam.name, inflowValue, dam.getOutflow(), dam.storage, dam.capacity, dam.opening
+                    );
                 }
             }
 
-            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~");
+            System.out.println("~*~*~*~*~*~*~*~*~*~*~*~*~\n");
         }
 
         List<River> getRivers() {
