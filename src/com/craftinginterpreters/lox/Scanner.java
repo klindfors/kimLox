@@ -91,14 +91,12 @@ class Scanner {
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
                 break;
             case '*':
-                if (peek() == 'R') {
-                    advance(); // consume the 'R'
-                    addToken(RSTAR);
-                } else if (peek() == 'D') {
-                    advance(); // consume the 'D'
-                    addToken(DSTAR);
+                if (match('R')) {
+                    addToken(TokenType.RSTAR);
+                } else if (match('D')) {
+                    addToken(TokenType.DSTAR);
                 } else {
-                    addToken(STAR); // regular multiplication
+                    addToken(TokenType.STAR);
                 }
                 break;
 
