@@ -200,7 +200,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         double opening   = openVal instanceof Double ? (Double) openVal : 0.0;
 
         // Create a record for this dam
-        WaterFlow.Dam dam = new WaterFlow.Dam(stmt.name.lexeme, stmt.inflow.lexeme, threshold, capacity, opening);
+        WaterFlow.Dam dam = new WaterFlow.Dam(stmt.name.lexeme, stmt.inflow.toString(), threshold, capacity, opening);
 
         // Store it in the interpreter’s dam table (a map you define at the top)
         dams.put(stmt.name.lexeme, dam);

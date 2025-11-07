@@ -34,15 +34,8 @@ class Parser {
 
     private Stmt declaration() {
         try {
-
-            if (check(IDENTIFIER) && peek().lexeme.equals("R")) {
-                advance(); // consume 'R' only once
-                return riverDeclaration();
-            }
-            if (check(IDENTIFIER) && peek().lexeme.equals("D")) {
-                advance(); // consume 'D' only once
-                return damDeclaration();
-            }
+            if (match(RSTAR)) return riverDeclaration();
+            if (match(DSTAR)) return damDeclaration();
             if (match(FUN)) return function("function");
             if (match(VAR)) return varDeclaration();
             return statement();
@@ -52,12 +45,10 @@ class Parser {
         }
     }
 
-
     //parse river declarations like: R googong ^ rW[...] T(...) A(...)
     // but R is consumed BEFORE riverdeclaration is  called.
     private Stmt riverDeclaration() {
        Token name = consume(IDENTIFIER, "Expect river name.");
-
         //parse flow type (^, <, >)
         Expr flowType = null;
         if (match(ROOT, LESS, GREATER)) {
@@ -68,13 +59,12 @@ class Parser {
             if (check(LEFT_PAREN)) {
                 operand = primary(); //this handles the parenthesized rivers
             }
-
             flowType = new Expr.FlowExpr(operator, operand);
         }
 
         //parse properties: rW[...], T(...), A(...)
         List<Expr> properties = new ArrayList<>();
-        while (!isAtEnd() && !check(IDENTIFIER) && !check(EOF)) {
+        while (!isAtEnd() &&  !check(EOF)) { //removed check identifier
             if (match(RW)) {
                 // Parse rW[...] water array
                 consume(LEFT_BRACKET, "Expect '[' after 'rW'.");
@@ -114,8 +104,6 @@ class Parser {
     //parse dams like D dam1 < googong thr(50) C(40) O(0.1)
 
         private Stmt damDeclaration() {
-            
-
             // dam name
             Token name = consume(IDENTIFIER, "Expect dam name.");
 
@@ -176,7 +164,7 @@ class Parser {
 
             // Return a Dam statement node. Adjust Stmt.Dam constructor to this signature if needed:
             // Stmt.Dam(Token name, Token inflowRiverName, Expr thr, Expr cap, Expr open)
-            return new Stmt.DamDef(name, inflowRiver, threshold, capacity, opening);
+            return new Stmt.DamDef(name, inflowRiver, threshold, capacity, opening); //inflow expr or token?
         }
 
 
@@ -286,7 +274,7 @@ class Parser {
 
     private Stmt expressionStatement() {
         Expr expr = expression();
-        consume(SEMICOLON, "Expect ';' after expression.");
+        match(SEMICOLON); //, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
 

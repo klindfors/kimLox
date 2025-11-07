@@ -24,6 +24,7 @@ enum TokenType {
     // Water flow keywords
     RIVER, RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
     DAM, THRESHOLD, CAP, OPENING,
+    RSTAR, DSTAR,
 
     AND, CLASS, ELSE, FALSE, IF, FOR, FUN, NIL, OR,
     PRINT, RETURN, TRUE, VAR, WHILE,

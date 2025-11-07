@@ -1,14 +1,14 @@
 // Root rivers with rainfall and terrain properties
-R googong ^ rW[11.4, 11.5, 0, 0, 0, 0, 0, 0, 0, 0] T(0.56) A(45)
-R jerra ^ rW[5.2, 3.1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.42) A(25)
-R upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35)
-R quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15)
+*R googong ^ rW[11.4, 11.5, 0, 0, 0, 0, 0, 0, 0, 0] T(0.56) A(45)
+*R jerra ^ rW[5.2, 3.1, 0, 0, 0, 0, 0, 0, 0, 0] T(0.42) A(25)
+*R upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35)
+*R quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15)
 
 // A dam downstream of Googong — slower drainage, smaller outlet
-D dam_1 < googong Thr(25) Cap(50) O(0.2)
+*D dam_1 < googong Thr(25) Cap(50) O(0.2);
 
 // Central river combining multiple upstream sources
-R central_molo (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20)
+*R central_molo (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20);
 
 // Final outflow combining dam and central river flows
-R ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10)
+*R ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10);

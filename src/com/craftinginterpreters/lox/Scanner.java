@@ -31,8 +31,6 @@ class Scanner {
         keywords.put("while",  WHILE);
 
         // Water flow keywords
-        keywords.put("R",  RIVER);
-        keywords.put("D",    DAM);
         keywords.put("rW",     RW); //rainwater
         keywords.put("T",      T);  //terrain
         keywords.put("A",      A); //area of catchment
@@ -60,6 +58,9 @@ class Scanner {
         }
 
         tokens.add(new Token(EOF, "", null, line));
+        for (Token t : tokens) {//lil debug
+            System.out.println(t);
+        }
         return tokens;
     }
 
@@ -89,6 +90,18 @@ class Scanner {
             case '>':
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
                 break;
+            case '*':
+                if (peek() == 'R') {
+                    advance(); // consume the 'R'
+                    addToken(RSTAR);
+                } else if (peek() == 'D') {
+                    advance(); // consume the 'D'
+                    addToken(DSTAR);
+                } else {
+                    addToken(STAR); // regular multiplication
+                }
+                break;
+
 
             case '/':
                 if (match('/')) {
@@ -156,7 +169,7 @@ class Scanner {
             return;
         }
 
-        // The closing ".
+        // The closing
         advance();
 
         // Trim the surrounding quotes.

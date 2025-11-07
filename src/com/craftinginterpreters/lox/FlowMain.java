@@ -33,6 +33,8 @@ public class FlowMain {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
 
+
+
         // Indicate an error in the exit code.
         if (hadError) System.exit(65);
         if (hadRuntimeError) System.exit(70);
@@ -225,6 +227,16 @@ public class FlowMain {
     private static void run(String source) {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
+
+
+
+        System.out.println("=== DEBUG: SCANNED TOKENS ==="); //good grief
+        for (Token t : tokens) {
+            System.out.println(t.type + " -> '" + t.lexeme + "'");
+        }
+        System.out.println("==============================");
+
+
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
         // Stop if there was a syntax error.

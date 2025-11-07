@@ -50,6 +50,12 @@ public class kimLox {
         Scanner scanner= new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
 
+        System.out.println("=== DEBUG: SCANNED TOKENS ==="); //good grief
+        for (Token t : tokens) {
+            System.out.println(t.type + " -> '" + t.lexeme + "'");
+        }
+        System.out.println("==============================");
+
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
 
@@ -73,7 +79,7 @@ public class kimLox {
         if (token.type == TokenType.EOF) {
             report(token.line, " at end", message);
         } else {
-            report(token.line, " at '" + token.lexeme + "'", message);
+            report(token.line, " at '" + token.lexeme + "'", message); //detta error sker.
         }
     }
 
