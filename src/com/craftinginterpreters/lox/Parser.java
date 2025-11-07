@@ -56,8 +56,11 @@ class Parser {
             Expr operand = null;
 
             //handle river combinations like: < (jerra & upper_molo & quean)
-            if (check(LEFT_PAREN)) {
-                operand = primary(); //this handles the parenthesized rivers
+            if (match(LEFT_PAREN)) {
+                operand = expression(); // parse the whole expression inside (...)
+                consume(RIGHT_PAREN, "Expect ')' after inflow expression.");
+            } else {
+                operand = expression();
             }
             flowType = new Expr.FlowExpr(operator, operand);
         }
@@ -101,71 +104,49 @@ class Parser {
     }
 
 
-    //parse dams like D dam1 < googong thr(50) C(40) O(0.1)
+    //parse dams like *D dam1 < googong Thr(50) Cap(40) O(0.1) Threshold, Capacity, Opening (percentage)
+    private Stmt damDeclaration() {
+        // dam name
+        Token name = consume(IDENTIFIER, "Expect dam name.");
 
-        private Stmt damDeclaration() {
-            // dam name
-            Token name = consume(IDENTIFIER, "Expect dam name.");
+        // inflow: expect '<' followed by river name identifier
+        Token inflow;
+        consume(LESS, "Expect '<' after dam name.");
+        inflow = consume(IDENTIFIER, "Expect river name after '<'.");
 
-            // inflow: expect '<' followed by river name identifier
-            Token inflowRiver = null;
-            if (match(LESS)) {
-                // Next token should be an identifier naming the river
-                inflowRiver = consume(IDENTIFIER, "Expect river name after '<'.");
-            } else {
-                throw error(peek(), "Expect '<' and river name after dam name.");
-            }
-
-            // Now parse the required parameter groupings: Thr(...), Cap(...), O(...)
-            // We'll parse them in order but allow whitespace/other tokens between them.
-            Expr threshold = null;
-            Expr capacity  = null;
-            Expr opening   = null;
-
-            // Thr(...)
-            if (match(IDENTIFIER) && previous().lexeme.equals("Thr")) {
-                consume(LEFT_PAREN, "Expect '(' after 'Thr'.");
-                if (!check(RIGHT_PAREN)) {
-                    threshold = expression();
-                } else {
-                    // empty paren not allowed; you can decide to allow default 0
-                    threshold = new Expr.Literal(0.0);
-                }
-                consume(RIGHT_PAREN, "Expect ')' after Thr value.");
-            } else {
-                throw error(peek(), "Expect 'Thr(...)' parameter for dam.");
-            }
-
-            // Cap(...)
-            if (match(IDENTIFIER) && previous().lexeme.equals("Cap")) {
-                consume(LEFT_PAREN, "Expect '(' after 'Cap'.");
-                if (!check(RIGHT_PAREN)) {
-                    capacity = expression();
-                } else {
-                    capacity = new Expr.Literal(5.0); //normal dam capacity
-                }
-                consume(RIGHT_PAREN, "Expect ')' after Cap value.");
-            } else {
-                throw error(peek(), "Expect 'Cap(...)' parameter for dam.");
-            }
-
-            // O(...) for dam opening
-            if (match(IDENTIFIER) && previous().lexeme.equals("O")) {
-                consume(LEFT_PAREN, "Expect '(' after 'O'.");
-                if (!check(RIGHT_PAREN)) {
-                    opening = expression();
-                } else {
-                    opening = new Expr.Literal(0.0);
-                }
-                consume(RIGHT_PAREN, "Expect ')' after O value.");
-            } else {
-                throw error(peek(), "Expect 'O(...)' parameter for dam.");
-            }
-
-            // Return a Dam statement node. Adjust Stmt.Dam constructor to this signature if needed:
-            // Stmt.Dam(Token name, Token inflowRiverName, Expr thr, Expr cap, Expr open)
-            return new Stmt.DamDef(name, inflowRiver, threshold, capacity, opening); //inflow expr or token?
+        // --- Parse Thr(...) ---
+        if (!check(THRESHOLD) && !(check(IDENTIFIER) && peek().lexeme.equals("Thr"))) {
+            throw error(peek(), "Expect 'Thr(...)' parameter for dam.");
         }
+        advance(); // consume Thr or THRESHOLD
+        consume(LEFT_PAREN, "Expect '(' after 'Thr'.");
+        Expr threshold = expression();
+        consume(RIGHT_PAREN, "Expect ')' after Thr value.");
+
+        // --- Parse Cap(...) ---
+        if (!(check(IDENTIFIER) && peek().lexeme.equals("Cap"))) {
+            throw error(peek(), "Expect 'Cap(...)' parameter for dam.");
+        }
+        advance(); // consume Cap
+        consume(LEFT_PAREN, "Expect '(' after 'Cap'.");
+        Expr capacity = expression();
+        consume(RIGHT_PAREN, "Expect ')' after Cap value.");
+
+        // --- Parse O(...) ---
+        if (!(check(IDENTIFIER) && peek().lexeme.equals("O"))) {
+            throw error(peek(), "Expect 'O(...)' parameter for dam.");
+        }
+        advance(); // consume O
+        consume(LEFT_PAREN, "Expect '(' after 'O'.");
+        Expr opening = expression();
+        consume(RIGHT_PAREN, "Expect ')' after O value.");
+
+        // --- Expect ';' ---
+        consume(SEMICOLON, "Expect ';' after dam declaration.");
+
+        // Build and return the AST node
+        return new Stmt.DamDef(name, inflow, threshold, capacity, opening);
+    }
 
 
 

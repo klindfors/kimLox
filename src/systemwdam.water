@@ -8,7 +8,7 @@
 *D dam_1 < googong Thr(25) Cap(50) O(0.2);
 
 // Central river combining multiple upstream sources
-*R central_molo (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20);
+*R central_molo < (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20);
 
 // Final outflow combining dam and central river flows
-*R ocean (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10);
+*R ocean < (dam_1 & central_molo) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.6) A(10);

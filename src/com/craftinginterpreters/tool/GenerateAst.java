@@ -40,7 +40,7 @@ public class GenerateAst {
                 "Var        : Token name, Expr initializer",
                 "While      : Expr condition, Stmt body",
                 "RiverDef   : Token name, Expr flowType, List<Expr> properties",
-                "DamDef     : Token name, Token inflow, Expr threshold, Expr capacity, Expr opening"
+                "DamDef     : Token name, Token inflow, Number threshold, Number capacity, Number opening"
 
         ));
     }

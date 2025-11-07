@@ -190,20 +190,24 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitDamDefStmt(Stmt.DamDef stmt) {
+
         Object thrVal = evaluate(stmt.threshold);
         Object capVal = evaluate(stmt.capacity);
         Object openVal = evaluate(stmt.opening);
 
-        // Optional: type-check / convert to numbers
-        double threshold = thrVal instanceof Double ? (Double) thrVal : 0.0;
-        double capacity  = capVal instanceof Double ? (Double) capVal : 0.0;
-        double opening   = openVal instanceof Double ? (Double) openVal : 0.0;
+        double threshold = (thrVal instanceof Double) ? (Double) thrVal : 0.0;
+        double capacity  = (capVal instanceof Double) ? (Double) capVal : 0.0;
+        double opening   = (openVal instanceof Double) ? (Double) openVal : 0.0;
 
-        // Create a record for this dam
-        WaterFlow.Dam dam = new WaterFlow.Dam(stmt.name.lexeme, stmt.inflow.toString(), threshold, capacity, opening);
+        String damName = stmt.name.lexeme;
+        String inflowName = stmt.inflow.lexeme;
 
-        // Store it in the interpreter’s dam table (a map you define at the top)
-        dams.put(stmt.name.lexeme, dam);
+        WaterFlow.Dam dam = new WaterFlow.Dam(damName, inflowName, threshold, capacity, opening);
+
+        dams.put(damName, dam);
+
+        System.out.printf("[debug] Dam created: %s (inflow=%s, thr=%.2f, cap=%.2f, open=%.2f)%n",
+                damName, inflowName, threshold, capacity, opening);
 
         return null;
     }
