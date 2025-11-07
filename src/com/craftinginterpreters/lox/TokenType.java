@@ -5,6 +5,7 @@ enum TokenType {
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
     LEFT_BRACKET, RIGHT_BRACKET, // Added for arrays [...]
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
+    SUPER, THIS,
 
     // One or two character tokens.
     BANG, BANG_EQUAL,
@@ -20,10 +21,11 @@ enum TokenType {
     // Literals.
     IDENTIFIER, STRING, NUMBER,
 
-    // Water flow key
-    RIVER, DAM, RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
+    // Water flow keywords
+    RIVER, RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
+    DAM, THRESHOLD, CAP, OPENING,
 
-        AND, CLASS, ELSE, FALSE, IF, FOR, FUN, NIL, OR,
+    AND, CLASS, ELSE, FALSE, IF, FOR, FUN, NIL, OR,
     PRINT, RETURN, TRUE, VAR, WHILE,
 
     EOF

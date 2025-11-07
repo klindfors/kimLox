@@ -39,8 +39,9 @@ public class GenerateAst {
                 "Return     : Token keyword, Expr value",
                 "Var        : Token name, Expr initializer",
                 "While      : Expr condition, Stmt body",
-                "RiverDef   : Token name, Expr flowType, List<Expr> properties"
-        ));//ev lägga till for här. kolla upp
+                "RiverDef   : Token name, Expr flowType, Token threshold, Token opening",
+                "DamDef    : Token name, Expr flowType, Token name"
+        ));
     }
 
     private static void defineAst(

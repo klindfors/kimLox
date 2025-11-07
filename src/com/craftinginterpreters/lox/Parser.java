@@ -34,11 +34,12 @@ class Parser {
 
     private Stmt declaration() {
         try {
-            // Check for river definitions first
-            if (check(IDENTIFIER) && checkAhead(1, ROOT, LESS, GREATER)) {
+            if (check(IDENTIFIER) && peek().lexeme.equals("R")) {
                 return riverDeclaration();
             }
-
+            if (check(IDENTIFIER) && peek().lexeme.equals("D")) {
+                return damDeclaration();
+            }
             if (match(FUN)) return function("function");
             if (match(VAR)) return varDeclaration();
             return statement();
@@ -48,10 +49,14 @@ class Parser {
         }
     }
 
-    //parse dam declaration
 
-    //parse river declarations like: googong ^ rW[...] T(...) A(...)
+
+    //parse river declarations like: R googong ^ rW[...] T(...) A(...)
     private Stmt riverDeclaration() {
+        Token rToken = consume(IDENTIFIER, "Expect 'R' before river name.");
+        if (!rToken.lexeme.equals("R")) {
+            error(rToken, "River declaration starts with R, dams with D");
+        }
         Token name = consume(IDENTIFIER, "Expect river name.");
 
         //parse flow type (^, <, >)
@@ -60,15 +65,15 @@ class Parser {
             Token operator = previous();
             Expr operand = null;
 
-            // Handle river combinations like: < (jerra & upper_molo & quean)
+            //handle river combinations like: < (jerra & upper_molo & quean)
             if (check(LEFT_PAREN)) {
-                operand = primary(); // This will handle the parenthesized expression
+                operand = primary(); //this handles the parenthesized rivers
             }
 
             flowType = new Expr.FlowExpr(operator, operand);
         }
 
-        // Parse properties: rW[...], T(...), A(...)
+        //parse properties: rW[...], T(...), A(...)
         List<Expr> properties = new ArrayList<>();
         while (!isAtEnd() && !check(IDENTIFIER) && !check(EOF)) {
             if (match(RW)) {
@@ -105,6 +110,85 @@ class Parser {
 
         return new Stmt.RiverDef(name, flowType, properties);
     }
+
+
+    //parse dams like D dam1 < googong thr(50) C(40) O(0.1)
+
+        private Stmt damDeclaration() {
+            // Expect 'D' marker as IDENTIFIER lexeme "D"
+            Token dToken = consume(IDENTIFIER, "Expect 'D' before dam name.");
+            if (!dToken.lexeme.equals("D")) {
+                throw error(dToken, "Dam declaration must start with 'D'.");
+            }
+
+            // dam name
+            Token name = consume(IDENTIFIER, "Expect dam name.");
+
+            // inflow: expect '<' followed by river name identifier
+            Token inflowRiver = null;
+            if (match(LESS)) {
+                // Next token should be an identifier naming the river
+                inflowRiver = consume(IDENTIFIER, "Expect river name after '<'.");
+            } else {
+                throw error(peek(), "Expect '<' and river name after dam name.");
+            }
+
+            // Now parse the required parameter groupings: Thr(...), Cap(...), O(...)
+            // We'll parse them in order but allow whitespace/other tokens between them.
+            Expr threshold = null;
+            Expr capacity  = null;
+            Expr opening   = null;
+
+            // Thr(...)
+            if (match(IDENTIFIER) && previous().lexeme.equals("Thr")) {
+                consume(LEFT_PAREN, "Expect '(' after 'Thr'.");
+                if (!check(RIGHT_PAREN)) {
+                    threshold = expression();
+                } else {
+                    // empty paren not allowed; you can decide to allow default 0
+                    threshold = new Expr.Literal(0.0);
+                }
+                consume(RIGHT_PAREN, "Expect ')' after Thr value.");
+            } else {
+                throw error(peek(), "Expect 'Thr(...)' parameter for dam.");
+            }
+
+            // Cap(...)
+            if (match(IDENTIFIER) && previous().lexeme.equals("Cap")) {
+                consume(LEFT_PAREN, "Expect '(' after 'Cap'.");
+                if (!check(RIGHT_PAREN)) {
+                    capacity = expression();
+                } else {
+                    capacity = new Expr.Literal(5.0); //normal dam capacity
+                }
+                consume(RIGHT_PAREN, "Expect ')' after Cap value.");
+            } else {
+                throw error(peek(), "Expect 'Cap(...)' parameter for dam.");
+            }
+
+            // O(...) for dam opening
+            if (match(IDENTIFIER) && previous().lexeme.equals("O")) {
+                consume(LEFT_PAREN, "Expect '(' after 'O'.");
+                if (!check(RIGHT_PAREN)) {
+                    opening = expression();
+                } else {
+                    opening = new Expr.Literal(0.0);
+                }
+                consume(RIGHT_PAREN, "Expect ')' after O value.");
+            } else {
+                throw error(peek(), "Expect 'O(...)' parameter for dam.");
+            }
+
+            // Return a Dam statement node. Adjust Stmt.Dam constructor to this signature if needed:
+            // Stmt.Dam(Token name, Token inflowRiverName, Expr thr, Expr cap, Expr open)
+            return new Stmt.DamDef(name, inflowRiver, threshold, capacity, opening);
+        }
+
+
+
+
+
+
 
     private Stmt statement() {
         if (match(FOR)) return forStatement();

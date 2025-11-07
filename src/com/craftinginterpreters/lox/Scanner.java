@@ -31,11 +31,15 @@ class Scanner {
         keywords.put("while",  WHILE);
 
         // Water flow keywords
-        keywords.put("River",  RIVER);
-        keywords.put("Dam",    DAM);
-        keywords.put("rW",     RW);
-        keywords.put("T",      T);
-        keywords.put("A",      A);
+        keywords.put("R",  RIVER);
+        keywords.put("D",    DAM);
+        keywords.put("rW",     RW); //rainwater
+        keywords.put("T",      T);  //terrain
+        keywords.put("A",      A); //area of catchment
+        keywords.put("Thr",    THRESHOLD); //dam threshold
+        keywords.put("C",      CAP);  //dam capacity
+
+        //dam opening, dam open closed?
     }
 
     private final String source;

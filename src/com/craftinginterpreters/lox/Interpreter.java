@@ -181,6 +181,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitDamDefStmt(Stmt.DamDef stmt) {
+        return null;
+    }
+
     // Handle river connections (& combinations)
     private void handleRiverConnections(WaterFlow.River downstreamRiver, Expr connectionExpr) {
         if (connectionExpr instanceof Expr.RiverJoin) {
