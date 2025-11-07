@@ -214,8 +214,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     private void handleRiverJoin(WaterFlow.River downstreamRiver, Expr connectionExpr) {
-        if (connectionExpr instanceof Expr.RiverJoin) {
-            Expr.RiverJoin joinExpr = (Expr.RiverJoin) connectionExpr;
+        if (connectionExpr instanceof Expr.RiverJoin joinExpr) {
             for (Expr riverExpr : joinExpr.rivers) {
                 if (riverExpr instanceof Expr.Variable) {
                     String upstreamName = ((Expr.Variable) riverExpr).name.lexeme;
