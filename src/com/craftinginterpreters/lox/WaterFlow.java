@@ -102,6 +102,36 @@ class WaterFlow {
         }
     }
 
+    public static class Dam {
+        final String name;
+        final String inflow;
+        double threshold;
+        double capacity;
+        double opening;
+        double storage = 0.0;
+
+        Dam(String name, String inflow, double threshold, double capacity, double opening) {
+            this.name = name;
+            this.inflow = inflow;
+            this.threshold = threshold;
+            this.capacity = capacity;
+            this.opening = opening;
+        }
+
+        double computeOutflow(double inflowValue) {
+            // Example logic: simple proportional outflow if above threshold
+            if (inflowValue > threshold) {
+                double excess = inflowValue - threshold;
+                storage = Math.min(storage + excess, capacity);
+            }
+            // O is fraction between 0–1 (outflow percentage)
+            double outflow = opening * storage;
+            storage -= outflow;
+            if (storage < 0) storage = 0;
+            return outflow;
+        }
+    }
+
     /**
      * Types of flow operators
      */

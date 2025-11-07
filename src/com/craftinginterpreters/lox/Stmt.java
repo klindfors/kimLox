@@ -142,7 +142,7 @@ abstract class Stmt {
     final List<Expr> properties;
   }
   static class DamDef extends Stmt {
-    DamDef(Token name, Token inflow, Token threshold, Token capacity, Token opening) {
+    DamDef(Token name, Token inflow, Expr threshold, Expr capacity, Expr opening) {
       this.name = name;
       this.inflow = inflow;
       this.threshold = threshold;
@@ -157,9 +157,9 @@ abstract class Stmt {
 
     final Token name;
     final Token inflow;
-    final Token threshold;
-    final Token capacity;
-    final Token opening;
+    final Expr threshold;
+    final Expr capacity;
+    final Expr opening;
   }
 
   abstract <R> R accept(Visitor<R> visitor);
