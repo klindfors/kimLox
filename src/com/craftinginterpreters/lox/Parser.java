@@ -34,10 +34,13 @@ class Parser {
 
     private Stmt declaration() {
         try {
-            if (match(IDENTIFIER) && previous().lexeme.equals("R")) {
+
+            if (check(IDENTIFIER) && peek().lexeme.equals("R")) {
+                advance(); // consume 'R' only once
                 return riverDeclaration();
             }
-            if (match(IDENTIFIER) && previous().lexeme.equals("D")) {
+            if (check(IDENTIFIER) && peek().lexeme.equals("D")) {
+                advance(); // consume 'D' only once
                 return damDeclaration();
             }
             if (match(FUN)) return function("function");
@@ -50,14 +53,10 @@ class Parser {
     }
 
 
-
     //parse river declarations like: R googong ^ rW[...] T(...) A(...)
+    // but R is consumed BEFORE riverdeclaration is  called.
     private Stmt riverDeclaration() {
-        Token rToken = consume(IDENTIFIER, "Expect 'R' before river name.");
-        if (!rToken.lexeme.equals("R")) {
-            error(rToken, "River declaration starts with R, dams with D");
-        }
-        Token name = consume(IDENTIFIER, "Expect river name.");
+       Token name = consume(IDENTIFIER, "Expect river name.");
 
         //parse flow type (^, <, >)
         Expr flowType = null;
@@ -115,11 +114,7 @@ class Parser {
     //parse dams like D dam1 < googong thr(50) C(40) O(0.1)
 
         private Stmt damDeclaration() {
-            // Expect 'D' marker as IDENTIFIER lexeme "D"
-            Token dToken = consume(IDENTIFIER, "Expect 'D' before dam name.");
-            if (!dToken.lexeme.equals("D")) {
-                throw error(dToken, "Dam declaration must start with 'D'.");
-            }
+            
 
             // dam name
             Token name = consume(IDENTIFIER, "Expect dam name.");
@@ -291,7 +286,7 @@ class Parser {
 
     private Stmt expressionStatement() {
         Expr expr = expression();
-        // consume(SEMICOLON, "Expect ';' after expression."); absolutely no semicolons.
+        consume(SEMICOLON, "Expect ';' after expression.");
         return new Stmt.Expression(expr);
     }
 
