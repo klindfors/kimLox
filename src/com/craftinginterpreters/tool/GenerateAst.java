@@ -39,8 +39,8 @@ public class GenerateAst {
                 "Return     : Token keyword, Expr value",
                 "Var        : Token name, Expr initializer",
                 "While      : Expr condition, Stmt body",
-                "RiverDef   : Token name, Expr flowType, Token threshold, Token opening",
-                "DamDef    : Token name, Expr flowType, Token name"
+                "RiverDef   : Token name, Expr flowType, List<Expr> properties",
+                "DamDef    : Token name, Token inflow, Token threshold, Token capacity, Token opening"
         ));
     }
 

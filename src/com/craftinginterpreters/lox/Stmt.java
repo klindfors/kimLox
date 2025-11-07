@@ -13,8 +13,7 @@ abstract class Stmt {
     R visitVarStmt(Var stmt);
     R visitWhileStmt(While stmt);
     R visitRiverDefStmt(RiverDef stmt);
-
-    R visitDamDefStmt(DamDef dam);
+    R visitDamDefStmt(DamDef stmt);
   }
   static class Block extends Stmt {
     Block(List<Stmt> statements) {
@@ -127,10 +126,9 @@ abstract class Stmt {
     final Stmt body;
   }
   static class RiverDef extends Stmt {
-    RiverDef(Token name, Expr flowType, Token inflow, List<Expr> properties) {
+    RiverDef(Token name, Expr flowType, List<Expr> properties) {
       this.name = name;
       this.flowType = flowType;
-      this.inflow = inflow;
       this.properties = properties;
     }
 
@@ -141,19 +139,12 @@ abstract class Stmt {
 
     final Token name;
     final Expr flowType;
-    final Token inflow;
     final List<Expr> properties;
   }
   static class DamDef extends Stmt {
-    final Token name;
-    final Token inflowRiverName;
-    final Expr threshold;
-    final Expr capacity;
-    final Expr opening;
-
-    DamDef(Token name, Token inflowRiverName, Expr threshold, Expr capacity, Expr opening) {
+    DamDef(Token name, Token inflow, Token threshold, Token capacity, Token opening) {
       this.name = name;
-      this.inflowRiverName = inflowRiverName;
+      this.inflow = inflow;
       this.threshold = threshold;
       this.capacity = capacity;
       this.opening = opening;
@@ -163,6 +154,12 @@ abstract class Stmt {
     <R> R accept(Visitor<R> visitor) {
       return visitor.visitDamDefStmt(this);
     }
+
+    final Token name;
+    final Token inflow;
+    final Token threshold;
+    final Token capacity;
+    final Token opening;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

@@ -23,6 +23,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             public String toString() { return "<native fn>"; }
         });
     }
+
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
@@ -105,6 +107,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
         return null;
     }
+
+
 
     // NEW: Handle river definitions
     @Override
