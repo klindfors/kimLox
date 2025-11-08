@@ -1,0 +1,46 @@
+program         → declaration* EOF ;
+
+declaration     → riverDecl
+                | damDecl
+                | rainfallDecl
+                | simulateStmt ;
+
+riverDecl       → "*R" IDENTIFIER flowType? property* ";" ;
+
+flowType        → "^"                // root river
+                | "<" source          // inflow from another river/rivers
+
+source          → IDENTIFIER
+                | "(" join ")" ;
+
+join            → IDENTIFIER ( "&" IDENTIFIER )* ;
+
+property        → rainwater
+                | terrain
+                | area ;
+
+rainwater       → "rW" "[" numberList "]" ;
+terrain         → "T" "(" expression ")" ;
+area            → "A" "(" expression ")" ;
+
+numberList      → NUMBER ( "," NUMBER )* ;
+
+damDecl         → "*D" IDENTIFIER inflowRef? damParams ";" ;
+
+inflowRef       → IDENTIFIER ;
+
+damParams       → "threshold" "=" expression
+                  "capacity" "=" expression
+                  "opening" "=" expression ;
+
+rainfallDecl    → rainExact
+                | rainRandom ;
+
+rainExact       → "*P" "(" expression ")" IDENTIFIER ";" ;
+rainRandom      → "*Prand" "(" expression "-" expression ")" IDENTIFIER ";" ;
+
+simulateStmt    → "simulate" NUMBER ";" ;
+
+expression      → term ( ( "-" | "+" ) term )* ;
+term            → factor ( ( "/" | "*" ) factor )* ;
+factor          → NUMBER | IDENTIFIER | "(" expression ")" ;

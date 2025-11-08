@@ -3,16 +3,16 @@ package com.craftinginterpreters.lox;
 enum TokenType {
 
 
-    // Water flow keywords
-    RIVER, RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
-    DAM, THRESHOLD, CAP, OPENING,
+    // Water flow tokens
+    RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
+    THRESHOLD, CAP, OPENING,
     RSTAR, DSTAR,
 
 
     // Single-character tokens.
 
     LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
-    LEFT_BRACKET, RIGHT_BRACKET, // Added for arrays [...]
+    LEFT_BRACKET, RIGHT_BRACKET, //added for  rW arrays [...]
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR,
     SUPER, THIS,
 

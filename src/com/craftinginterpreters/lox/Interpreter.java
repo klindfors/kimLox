@@ -205,7 +205,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         WaterFlow.Dam dam = new WaterFlow.Dam(damName, inflowName, threshold, capacity, opening);
 
         dams.put(damName, dam);
-        riverSystem.addDam(dam); // ✅ <-- Add this line
+        riverSystem.addDam(dam);
 
         System.out.printf("[debug] Dam created: %s (inflow=%s, thr=%.2f, cap=%.2f, open=%.2f)%n",
                 damName, inflowName, threshold, capacity, opening);

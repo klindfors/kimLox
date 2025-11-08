@@ -2,7 +2,7 @@ package com.craftinginterpreters.lox;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Random;
 
 
 class WaterFlow {
@@ -15,6 +15,7 @@ class WaterFlow {
         final double catchmentArea;     //A(...) - size of the area, affects drain rate
         final List<River> inflows;
         River outflow;
+        Random random = new Random();
 
         River(String name, FlowType flowType, List<Double> waterArray,
               double terrainType, double catchmentArea) {
@@ -52,7 +53,7 @@ class WaterFlow {
         }
 
 
-        // Add rainfall to the catchment
+        // Add rainfall to the catchment, after rain event.
         void addRainfall(double rainfall) {
             // Remove oldest day, add new rainfall
             if (waterArray.size() >= 10) {
@@ -73,19 +74,14 @@ class WaterFlow {
         }
         private double calculateDrainageRate(int dayIndex) {
             //dayIndex: 0 = most recent, 9 = oldest (10th day)
-
             //force complete drainage on day 10 (index 9)
             if (dayIndex == 9) {
                 return 1.0;
             }
-
             double baseRate = 0.15;
-
             double ageFactor = 1.0 + (dayIndex * 0.1); // 1.0 to 1.9 multiplier
-
             //rea factor: larger area = slower drainage (inverse relationship)
             double areaFactor = 50.0 / (50.0 + catchmentArea); // Normalize around 50 hectares
-
             //terrain factor: more stony (higher value) = faster drainage
             double terrainFactor = 1.0 + terrainType; // 1.0 to 2.0 multiplier
             double finalRate = baseRate * ageFactor * areaFactor * terrainFactor;
@@ -125,12 +121,10 @@ class WaterFlow {
         }
 
         double computeOutflow(double inflowValue) {
-            // Example logic: simple proportional outflow if above threshold
             if (inflowValue > threshold) {
                 double excess = inflowValue - threshold;
                 storage = Math.min(storage + excess, capacity);
             }
-            // O is fraction between 0–1 (outflow percentage)
             double outflow = opening * storage;
             storage -= outflow;
             if (storage < 0) storage = 0;

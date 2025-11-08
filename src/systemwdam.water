@@ -4,10 +4,10 @@
 *R upper_molo ^ rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35);
 *R quean ^ rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15);
 
-// A dam downstream of Googong — slower drainage, smaller outlet
+// A dam downstream of Googong. Dam spillway (O) lets through 20 % of storage
 *D dam_1 < googong Thr(25) Cap(50) O(0.2);
 
-// Central river combining multiple upstream sources
+// Central molo combining multiple upstream sources
 *R central_molo < (jerra & upper_molo & quean) rW[0, 0, 0, 0, 0, 0, 0, 0, 0, 0] T(0.45) A(20);
 
 // Final outflow combining dam and central river flows
