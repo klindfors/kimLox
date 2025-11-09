@@ -49,33 +49,33 @@ class Parser {
     }
 
     private Stmt rainfallDeclaration() {
-        if (match(PSTAR)) return rainExact();
-        if (match(PRSTAR)) return rainRandom();
-        throw error(peek(), "Expect rainfall declaration (*P or *Prand).");
-    }
-    // Parses: *P(3.0) riverName;
-    private Stmt rainExact() {
-        Token star = consume(TokenType.PSTAR, "Expect *P for exact rainfall.");
-        consume(TokenType.LEFT_PAREN, "Expect '(' after *P.");
-        Expr amount = expression();
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after amount.");
-        Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall amount.");
-        consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
-        return new Stmt.RainExact(amount, target);
+        if (match(PSTAR)) return rainDeclaration(true);
+        if (match(PRSTAR)) return rainDeclaration(false);
+        throw error(peek(), "Expect *P or *Prand for rainfall declaration.");
     }
 
-    // Parses: *Prand(2.0-11.0) riverName;
-    private Stmt rainRandom() {
-        Token star = consume(TokenType.PRSTAR, "Expect *Prand for random rainfall.");
-        consume(TokenType.LEFT_PAREN, "Expect '(' after *Prand.");
+    private Stmt rainDeclaration(boolean allowRange) {
+        Token star = previous(); // *P or *Prand
+        consume(TokenType.LEFT_PAREN, "Expect '(' after " + star.lexeme + ".");
+
         Expr min = expression();
-        consume(TokenType.MINUS, "Expect '-' between min and max rainfall values.");
-        Expr max = expression();
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after max rainfall value.");
-        Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall declaration.");
-        consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
-        return new Stmt.RainRandom(min, max, target);
+
+        // detect range form a-b
+        if (match(TokenType.MINUS)) {
+            Expr max = expression();
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after max rainfall value.");
+            Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall declaration.");
+            consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
+            return new Stmt.RainRandom(min, max, target);
+        } else {
+            // exact form
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after rainfall amount.");
+            Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall declaration.");
+            consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
+            return new Stmt.RainExact(min, target);
+        }
     }
+
 
 
     //parse river declarations like: R googong ^ rW[...] T(...) A(...)
@@ -196,6 +196,7 @@ class Parser {
         if (match(RETURN)) return returnStatement();
         if (match(WHILE)) return whileStatement();
         if (match(LEFT_BRACE)) return new Stmt.Block(block());
+
         return expressionStatement();
     }
 

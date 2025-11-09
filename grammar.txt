@@ -44,3 +44,37 @@ simulateStmt    → "simulate" NUMBER ";" ;
 expression      → term ( ( "-" | "+" ) term )* ;
 term            → factor ( ( "/" | "*" ) factor )* ;
 factor          → NUMBER | IDENTIFIER | "(" expression ")" ;
+
+
+
+
+
+NUMBER          → DIGIT+ ( "." DIGIT+ )? ;
+IDENTIFIER      → ALPHA ( ALPHA | DIGIT )* ;
+ALPHA           → "a" ... "z" | "A" ... "Z" | "_" ;
+DIGIT           → "0" ... "9" ;
+
+*R              → literal "*R" ;
+*D              → literal "*D" ;
+*P              → literal "*P" ;
+*Prand          → literal "*Prand" ;
+
+rW              → literal "rW" ;
+T               → literal "T" ;
+A               → literal "A" ;
+
+"^"             → ROOT ;
+"<"             → LESS ;
+"&"             → AND ;
+"("             → LEFT_PAREN ;
+")"             → RIGHT_PAREN ;
+"["             → LEFT_BRACKET ;
+"]"             → RIGHT_BRACKET ;
+","             → COMMA ;
+"-"             → MINUS ;
+"+"             → PLUS ;
+"*"             → STAR ;
+"/"             → SLASH ;
+"="             → EQUAL ;
+";"             → SEMICOLON ;
+

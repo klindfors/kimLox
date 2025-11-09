@@ -187,23 +187,50 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         System.out.println("Created river: " + river);
         return null;
     }
-
     @Override
     public Void visitRainExactStmt(Stmt.RainExact stmt) {
-        double amount = (double) evaluate(stmt.amount);
+        Object value = evaluate(stmt.amount);
+        if (!(value instanceof Double)) {
+            throw new RuntimeError(stmt.target, "Rainfall amount must be numeric.");
+        }
+
+        double amount = (double) value;
         String targetName = stmt.target.lexeme;
+
         riverSystem.scheduleExactRain(targetName, amount);
+
+        System.out.printf("[rain] Scheduled exact rainfall of %.2f on %s%n", amount, targetName);
         return null;
     }
 
     @Override
     public Void visitRainRandomStmt(Stmt.RainRandom stmt) {
-        double min = (double) evaluate(stmt.minAmount);
-        double max = (double) evaluate(stmt.maxAmount);
+        Object minObj = evaluate(stmt.minAmount);
+        Object maxObj = evaluate(stmt.maxAmount);
+
+        if (!(minObj instanceof Double) || !(maxObj instanceof Double)) {
+            throw new RuntimeError(stmt.target, "Rainfall range values must be numeric.");
+        }
+
+        double min = (double) minObj;
+        double max = (double) maxObj;
+
+        // Handle reversed ranges gracefully
+        if (min > max) {
+            double tmp = min;
+            min = max;
+            max = tmp;
+        }
+
         String targetName = stmt.target.lexeme;
+
         riverSystem.scheduleRandomRain(targetName, min, max);
+
+        System.out.printf("[rain] Scheduled random rainfall (%.2f–%.2f) on %s%n",
+                min, max, targetName);
         return null;
     }
+
 
     @Override
     public Void visitDamDefStmt(Stmt.DamDef stmt) {

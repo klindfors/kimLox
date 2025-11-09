@@ -184,6 +184,15 @@ class WaterFlow {
             return null;
         }
 
+        void applyRandomRainToAllRivers(double minRain, double maxRain) {
+            Random rand = new Random();
+            for (River river : rivers) {
+                double rainfall = minRain + rand.nextDouble() * (maxRain - minRain);
+                river.addRainfall(rainfall);
+                river.lastRainReceived = rainfall;
+            }
+        }
+
         Dam findDam(String name) {
             for (Dam dam : dams) {
                 if (dam.name.equals(name)) {
@@ -220,6 +229,7 @@ class WaterFlow {
          *   - lastDrained (mm removed by drainTerrain this day)
          */
         void simulateDay() {
+
             simulateDay(new ArrayList<>(scheduledRainEvents));
             // After sim, clear scheduled ones (they were applied)
             clearScheduledRain();
@@ -227,6 +237,7 @@ class WaterFlow {
 
         // Main simulate used internally (and by interpreter if it provides a list)
         void simulateDay(List<RainfallEvent> rainfallEvents) {
+            applyRandomRainToAllRivers(0.0, 10.0);
             currentDay++;
 
             // Keep last day's events for status printing
@@ -337,7 +348,6 @@ class WaterFlow {
                             "  Dam %-12s | Inflow(from=%-10s): %-8.2f | Outflow: %-8.2f | Storage: %-8.2f | Cap: %-6.2f | Open: %-4.2f%n",
                             dam.name, dam.inflow, inflowValue, dam.getOutflow(), dam.storage, dam.capacity, dam.opening
                     );
-                    System.out.printf("    Outflow target: %s%n", outflowTarget);
                 }
             }
 

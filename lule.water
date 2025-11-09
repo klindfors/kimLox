@@ -20,4 +20,4 @@
 //outflow into the ocean Bottenviken
 *R bottenviken < lower_lule rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15);
 
-*Pr(11.1-15.0) lule;
+*P(11.1-15.0) lule;

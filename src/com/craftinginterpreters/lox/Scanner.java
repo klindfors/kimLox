@@ -96,11 +96,21 @@ class Scanner {
                 } else if (match('D')) {
                     addToken(TokenType.DSTAR);
                 } else if (match('P')) {
-                    if (match('r')) {
-                        addToken(TokenType.PRSTAR); // *Prand(...)
+                    if (peek() == 'r') {
+                        // Look ahead to ensure it's "*Prand"
+                        int startPeek = current;
+                        advance(); // consume 'r'
+                        if (match('a') && match('n') && match('d')) {
+                            addToken(TokenType.PRSTAR);
+                        } else {
+                            // rollback if it's not actually "rand"
+                            current = startPeek;
+                            addToken(TokenType.PSTAR);
+                        }
                     } else {
-                        addToken(TokenType.PSTAR);  // *P(x)
+                        addToken(TokenType.PSTAR);
                     }
+
                 } else {
                     addToken(TokenType.STAR);
                 }
