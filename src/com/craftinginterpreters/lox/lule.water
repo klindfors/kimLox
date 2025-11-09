@@ -1,0 +1,19 @@
+// Root rivers with rainfall and terrain properties
+// Real river system in north of Sweden, Lule älvdal
+// lots of rain in the terrain of stora_lule as the snow is melting.
+
+*R stora_lule ^ rW[11.4, 11.5, 10.0, 9.0, 9.3, 7.8, 9.9, 3.0, 0, 1.0] T(0.56) A(85);
+*R lilla_lule ^ rW[5.2, 3.1, 2.0, 11.0, 0, 0, 2.8, 0, 0, 0] T(0.42) A(25);
+
+
+// A dam downstream of Googong. Dam spillway (O) lets through 20 % of storage
+*D porsi_dam < (stora_lule & lilla_lule) Thr(25) Cap(100) O(0.1);
+
+*R upper_lule < porsi_dam rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35);
+
+*D boden_dam < upper_lule Thr(25) Cap(50) O(0.2);
+
+*R lower_lule < boden_dam rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.50) A(15);
+
+//outflow into the ocean Bottenviken
+*R bottenviken < lower_lule rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15);

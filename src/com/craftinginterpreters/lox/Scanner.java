@@ -95,6 +95,12 @@ class Scanner {
                     addToken(TokenType.RSTAR);
                 } else if (match('D')) {
                     addToken(TokenType.DSTAR);
+                } else if (match('P')) {
+                    if (match('r')) {
+                        addToken(TokenType.PRSTAR); // *Prand(...)
+                    } else {
+                        addToken(TokenType.PSTAR);  // *P(x)
+                    }
                 } else {
                     addToken(TokenType.STAR);
                 }

@@ -7,6 +7,8 @@ enum TokenType {
     RW, T, A, // River, Dam, rW for water array, T for terrain, A for area size
     THRESHOLD, CAP, OPENING,
     RSTAR, DSTAR,
+    PSTAR,        // *P
+    PRSTAR,    // *Prand
 
 
     // Single-character tokens.

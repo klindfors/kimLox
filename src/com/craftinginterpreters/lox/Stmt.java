@@ -14,6 +14,8 @@ abstract class Stmt {
     R visitWhileStmt(While stmt);
     R visitRiverDefStmt(RiverDef stmt);
     R visitDamDefStmt(DamDef stmt);
+    R visitRainExactStmt(RainExact stmt);
+    R visitRainRandomStmt(RainRandom stmt);
   }
   static class Block extends Stmt {
     Block(List<Stmt> statements) {
@@ -160,6 +162,36 @@ abstract class Stmt {
     final Expr threshold;
     final Expr capacity;
     final Expr opening;
+  }
+  static class RainExact extends Stmt {
+    RainExact(Expr amount, Token target) {
+      this.amount = amount;
+      this.target = target;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitRainExactStmt(this);
+    }
+
+    final Expr amount;
+    final Token target;
+  }
+  static class RainRandom extends Stmt {
+    RainRandom(Expr minAmount, Expr maxAmount, Token target) {
+      this.minAmount = minAmount;
+      this.maxAmount = maxAmount;
+      this.target = target;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitRainRandomStmt(this);
+    }
+
+    final Expr minAmount;
+    final Expr maxAmount;
+    final Token target;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

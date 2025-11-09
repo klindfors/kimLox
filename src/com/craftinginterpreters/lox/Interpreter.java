@@ -113,7 +113,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
 
 
-    // NEW: Handle river definitions
+    // handle river definitions
     @Override
     public Void visitRiverDefStmt(Stmt.RiverDef stmt) {
         String riverName = stmt.name.lexeme;
@@ -145,7 +145,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                     }
                 }
             } else if (property instanceof Expr.FunctionCall) {
-                // T(...) or A(...) function calls
+                // T(...) or A(...)
                 Expr.FunctionCall funcCall = (Expr.FunctionCall) property;
                 String funcName = funcCall.name.lexeme;
 
@@ -189,6 +189,23 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitRainExactStmt(Stmt.RainExact stmt) {
+        double amount = (double) evaluate(stmt.amount);
+        String targetName = stmt.target.lexeme;
+        riverSystem.scheduleExactRain(targetName, amount);
+        return null;
+    }
+
+    @Override
+    public Void visitRainRandomStmt(Stmt.RainRandom stmt) {
+        double min = (double) evaluate(stmt.minAmount);
+        double max = (double) evaluate(stmt.maxAmount);
+        String targetName = stmt.target.lexeme;
+        riverSystem.scheduleRandomRain(targetName, min, max);
+        return null;
+    }
+
+    @Override
     public Void visitDamDefStmt(Stmt.DamDef stmt) {
 
         Object thrVal = evaluate(stmt.threshold);
@@ -212,6 +229,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
         return null;
     }
+
+
 
     private void handleRiverJoin(WaterFlow.River downstreamRiver, Expr connectionExpr) {
         if (connectionExpr instanceof Expr.RiverJoin joinExpr) {

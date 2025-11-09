@@ -38,12 +38,45 @@ class Parser {
             if (match(DSTAR)) return damDeclaration();
             if (match(FUN)) return function("function");
             if (match(VAR)) return varDeclaration();
+            if (check(PSTAR) || check(PRSTAR)) return rainfallDeclaration();
+
+
             return statement();
         } catch (ParseError error) {
             synchronize();
             return null;
         }
     }
+
+    private Stmt rainfallDeclaration() {
+        if (match(PSTAR)) return rainExact();
+        if (match(PRSTAR)) return rainRandom();
+        throw error(peek(), "Expect rainfall declaration (*P or *Prand).");
+    }
+    // Parses: *P(3.0) riverName;
+    private Stmt rainExact() {
+        Token star = consume(TokenType.PSTAR, "Expect *P for exact rainfall.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after *P.");
+        Expr amount = expression();
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after amount.");
+        Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall amount.");
+        consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
+        return new Stmt.RainExact(amount, target);
+    }
+
+    // Parses: *Prand(2.0-11.0) riverName;
+    private Stmt rainRandom() {
+        Token star = consume(TokenType.PRSTAR, "Expect *Prand for random rainfall.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after *Prand.");
+        Expr min = expression();
+        consume(TokenType.MINUS, "Expect '-' between min and max rainfall values.");
+        Expr max = expression();
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after max rainfall value.");
+        Token target = consume(TokenType.IDENTIFIER, "Expect river name after rainfall declaration.");
+        consume(TokenType.SEMICOLON, "Expect ';' after rainfall declaration.");
+        return new Stmt.RainRandom(min, max, target);
+    }
+
 
     //parse river declarations like: R googong ^ rW[...] T(...) A(...)
     // but R is consumed BEFORE riverdeclaration is  called.
