@@ -203,8 +203,8 @@ class WaterFlow {
         }
 
 
-        // -------------------------
-        // Exact rain: *P(x) river
+
+        // exact rain: *P(x) river
         void scheduleExactRain(String riverName, double amount) {
             scheduledRainEvents.add(new RainfallEvent(riverName, amount));
         }
@@ -223,7 +223,7 @@ class WaterFlow {
         }
 
         /**
-         * Simulate one day. This applies scheduled rainfall events, drains terrain,
+         * Simulate one day. applies scheduled rainfall events, drains terrain,
          * simulates dams and prints system status. It records per-river:
          *   - lastRainReceived (mm added to waterArray this day)
          *   - lastDrained (mm removed by drainTerrain this day)
@@ -231,7 +231,7 @@ class WaterFlow {
         void simulateDay() {
 
             simulateDay(new ArrayList<>(scheduledRainEvents));
-            // After sim, clear scheduled ones (they were applied)
+
             clearScheduledRain();
         }
 
@@ -240,10 +240,10 @@ class WaterFlow {
             applyRandomRainToAllRivers(0.0, 10.0);
             currentDay++;
 
-            // Keep last day's events for status printing
+
             lastRainfallEvents = new ArrayList<>(rainfallEvents);
 
-            // 1) Apply rainfall events to rivers -> call addRainfall (preserves 10-day array)
+            // rainfall events to rivers -> call addRainfall (preserves 10-day array)
             for (RainfallEvent ev : rainfallEvents) {
                 River river = findRiver(ev.riverName);
                 if (river != null) {
@@ -259,14 +259,13 @@ class WaterFlow {
                     // afterAddTotal (sum in terrain before draining)
                     double afterAddTotal = sumWaterArray(river.waterArray);
 
-                    // For clarity: storedInTerrainBeforeDrain = afterAddTotal
-                    // (we'll compute lastDrained after drain)
+
                 } else {
                     System.out.printf("Warning: rainfall scheduled for unknown river '%s'%n", ev.riverName);
                 }
             }
 
-            // 2) Drain terrains — but we must compute drained amount (difference before/after)
+
             for (River river : rivers) {
                 double beforeDrain = sumWaterArray(river.waterArray);
                 river.drainTerrain(); // original logic unchanged
@@ -277,10 +276,10 @@ class WaterFlow {
                 river.lastDrained = drained;
             }
 
-            // 3) Simulate dam flows (unchanged algorithm; print debug lines here)
+
             simulateDamFlows();
 
-            // 4) Print system status
+
             printSystemStatus();
         }
 
@@ -325,7 +324,7 @@ class WaterFlow {
                 }
             }
 
-            // River Info — print flow + terrain + area + exact stored and drained stats
+            // River Info, print flow + terrain + area + exact stored and drained stats
             System.out.println("\nRivers:");
             for (River river : rivers) {
                 double storedNow = sumWaterArray(river.waterArray); // total mm currently in terrain (sum of array)
@@ -335,7 +334,7 @@ class WaterFlow {
                         storedNow, river.lastRainReceived, river.lastDrained);
             }
 
-            // Dam Info — shows inflow name and current storage/outflow. Also show outflow target if configured.
+            // Dam Info, shows inflow name and current storage/outflow. Also show outflow target if configured.
             System.out.println("\nDams:");
             if (dams.isEmpty()) {
                 System.out.println("  (none)");

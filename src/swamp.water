@@ -1,7 +1,7 @@
-bigswamp ^ rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.15) A(150)
+*R bigswamp ^ rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.15) A(150)
 
-smallforest < bigswamp rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.4) A(20)
+*R smallforest < bigswamp rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.4) A(20)
 
-lilcreek ^ rw[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.15) A(150)
+*R lilcreek ^ rw[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.15) A(150)
 
-outflowriver < smallforest & lilcreek rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.9) A(35)
+*R outflowriver < smallforest & lilcreek rW[8, 12, 10, 6, 4, 2, 0, 0, 0, 0] T(0.9) A(35)

@@ -79,7 +79,7 @@ class Parser {
 
 
     //parse river declarations like: R googong ^ rW[...] T(...) A(...)
-    // but R is consumed BEFORE riverdeclaration is  called.
+
     private Stmt riverDeclaration() {
        Token name = consume(IDENTIFIER, "Expect river name.");
         //parse flow type (^, <, >)
@@ -149,7 +149,7 @@ class Parser {
         consume(LESS, "Expect '<' after dam name.");
         inflow = consume(IDENTIFIER, "Expect river name after '<'.");
 
-        // --- Parse Thr(...) ---
+
         if (!check(THRESHOLD) && !(check(IDENTIFIER) && peek().lexeme.equals("Thr"))) {
             throw error(peek(), "Expect 'Thr(...)' parameter for dam.");
         }
@@ -158,7 +158,7 @@ class Parser {
         Expr threshold = expression();
         consume(RIGHT_PAREN, "Expect ')' after Thr value.");
 
-        // --- Parse Cap(...) ---
+
         if (!(check(IDENTIFIER) && peek().lexeme.equals("Cap"))) {
             throw error(peek(), "Expect 'Cap(...)' parameter for dam.");
         }
@@ -167,7 +167,6 @@ class Parser {
         Expr capacity = expression();
         consume(RIGHT_PAREN, "Expect ')' after Cap value.");
 
-        // --- Parse O(...) ---
         if (!(check(IDENTIFIER) && peek().lexeme.equals("O"))) {
             throw error(peek(), "Expect 'O(...)' parameter for dam.");
         }
@@ -176,7 +175,7 @@ class Parser {
         Expr opening = expression();
         consume(RIGHT_PAREN, "Expect ')' after O value.");
 
-        // --- Expect ';' ---
+
         consume(SEMICOLON, "Expect ';' after dam declaration.");
 
         // Build and return the AST node

@@ -7,17 +7,17 @@
 *R lulejoin < (stora_lule & lilla_lule) rW[0.0, 0.0, 0.0, 0.0, 0, 0, 0.0, 0, 0, 0] T(0.9) A(2);
 
 // A dam downstream of Googong. Dam spillway (O) lets through 20 % of storage
-*D porsi_dam < lulejoin Thr(25) Cap(100) O(0.1);
+*D porsi_dam < lulejoin Thr(20) Cap(50) O(0.2);
 
 *R upper_lule < porsi_dam rW[8.3, 6.7, 0, 0, 0, 0, 0, 0, 0, 0] T(0.51) A(35);
 
-*D boden_dam < upper_lule Thr(25) Cap(50) O(0.2);
+*D boden_dam < upper_lule Thr(25) Cap(20) O(0.4);
 
 *R lower_lule < boden_dam rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.50) A(15);
 
-*Prand(15.0-20.0) stora_lule;
+//*Prand(15.0-20.0) stora_lule;
 
 //outflow into the ocean Bottenviken
 *R bottenviken < lower_lule rW[2.1, 1.8, 0, 0, 0, 0, 0, 0, 0, 0] T(0.38) A(15);
 
-*P(11.1-15.0) lule;
+//*P(11.1-15.0) lule;
