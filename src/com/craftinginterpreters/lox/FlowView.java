@@ -110,6 +110,8 @@ public class FlowView extends Application {
             g.strokeRect(x, y, w, h);
             g.setFill(Color.BLACK);
             g.fillText(dam.name, x, y - 8);
+            g.fillText(String.format("Storage: %.1f / %.0f", dam.storage, dam.capacity), x, y + h + 16);
+            g.fillText(String.format("Outflow: %.1f", dam.getOutflow()), x, y + h + 30);
         }
     }
 }
