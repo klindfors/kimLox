@@ -69,10 +69,11 @@ class WaterFlow {
         // Add rainfall to the catchment, after rain event.
         void addRainfall(double rainfall) {
             // Remove oldest day, add new rainfall
+
             if (waterArray.size() >= 10) {
-                waterArray.remove(0);
+                waterArray.removeLast();
             }
-            waterArray.add(rainfall);
+            waterArray.addFirst(rainfall);
         }
 
         void drainTerrain() {
