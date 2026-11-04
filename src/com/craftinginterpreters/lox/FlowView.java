@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class FlowView extends Application {
 
@@ -43,6 +44,18 @@ public class FlowView extends Application {
     private int depth(WaterFlow.Dam dam) {
         WaterFlow.River in = system.findRiver(dam.inflow);
         return in == null ? 0 : depth(in) + 1;
+    }
+
+    private void rain(GraphicsContext g, double[] p, double mm, long seed) {
+        Random rnd = new Random(seed);
+        g.setStroke(Color.STEELBLUE);
+        g.setLineWidth(1.5);
+        int drops = (int) Math.min(15, Math.round(mm));
+        for (int i = 0; i < drops; i++) {
+            double x = p[0] - 15 + rnd.nextDouble() * 30;
+            double y = p[1] - 65 + rnd.nextDouble() * 20;
+            g.strokeLine(x, y, x - 1, y + 4);
+        }
     }
 
     private void draw() {
@@ -95,6 +108,8 @@ public class FlowView extends Application {
             g.setFill(Color.BLACK);
             g.fillText(r.name, p[0] - 18, p[1] - 26);
             g.fillText(String.format("%.1f", r.getCurrentFlow()), p[0] - 18, p[1] + 34);
+            g.fillText(String.format("Rain: %.1f mm", r.lastRainReceived), p[0] - 18, p[1] + 48);
+            rain(g, p, r.lastRainReceived, r.name.hashCode());
         }
 
         for (WaterFlow.Dam dam : system.getDams()) {
