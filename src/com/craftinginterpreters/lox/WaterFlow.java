@@ -52,6 +52,12 @@ class WaterFlow {
                 totalFlow += waterAmount * recencyWeight;
             }
 
+            // apply area and terrain effects
+            double areaFlowMultiplier = Math.log(1 + catchmentArea / 10.0);
+            double terrainFlowMultiplier = 0.8 + (terrainType * 0.4);
+
+            totalFlow *= areaFlowMultiplier * terrainFlowMultiplier;
+
             // adding inflows recursively
             for (River inflow : inflows) {
                 totalFlow += 0.9 * inflow.getCurrentFlow();
@@ -59,11 +65,7 @@ class WaterFlow {
                 // to simulate some loss (you can adjust or remove)
             }
 
-            // apply area and terrain effects
-            double areaFlowMultiplier = Math.log(1 + catchmentArea / 10.0);
-            double terrainFlowMultiplier = 0.8 + (terrainType * 0.4);
-
-            return totalFlow * areaFlowMultiplier * terrainFlowMultiplier;
+            return totalFlow;
         }
 
         // Add rainfall to the catchment, after rain event.
