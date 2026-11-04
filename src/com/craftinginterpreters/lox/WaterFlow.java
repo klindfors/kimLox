@@ -4,12 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * WaterFlow.java - updated with:
- *  - per-river daily stats: lastRainReceived, lastDrained
- *  - printSystemStatus showing rain received and drained per river, and dams list
-
- */
 class WaterFlow {
 
     static class River {
@@ -22,9 +16,9 @@ class WaterFlow {
         River outflow;
         final Random random = new Random();
 
-        // NEW (non-invasive): daily bookkeeping (does not change existing logic)
         double lastRainReceived = 0.0; // mm added to the waterArray for today
         double lastDrained = 0.0;      // mm drained from the terrain today
+        double damInflow = 0.0;
 
         River(String name, FlowType flowType, List<Double> waterArray,
               double terrainType, double catchmentArea) {
@@ -52,6 +46,12 @@ class WaterFlow {
                 totalFlow += waterAmount * recencyWeight;
             }
 
+            // apply area and terrain effects
+            double areaFlowMultiplier = Math.log(1 + catchmentArea / 10.0);
+            double terrainFlowMultiplier = 0.8 + (terrainType * 0.4);
+
+            totalFlow *= areaFlowMultiplier * terrainFlowMultiplier;
+
             // adding inflows recursively
             for (River inflow : inflows) {
                 totalFlow += 0.9 * inflow.getCurrentFlow();
@@ -59,20 +59,17 @@ class WaterFlow {
                 // to simulate some loss (you can adjust or remove)
             }
 
-            // apply area and terrain effects
-            double areaFlowMultiplier = Math.log(1 + catchmentArea / 10.0);
-            double terrainFlowMultiplier = 0.8 + (terrainType * 0.4);
-
-            return totalFlow * areaFlowMultiplier * terrainFlowMultiplier;
+            return totalFlow + damInflow;
         }
 
         // Add rainfall to the catchment, after rain event.
         void addRainfall(double rainfall) {
             // Remove oldest day, add new rainfall
+
             if (waterArray.size() >= 10) {
-                waterArray.remove(0);
+                waterArray.removeLast();
             }
-            waterArray.add(rainfall);
+            waterArray.addFirst(rainfall);
         }
 
         void drainTerrain() {
@@ -131,12 +128,10 @@ class WaterFlow {
         }
 
         double computeOutflow(double inflowValue) {
-            // Example logic: simple proportional outflow if above threshold
             if (inflowValue > threshold) {
                 double excess = inflowValue - threshold;
                 storage = Math.min(storage + excess, capacity);
             }
-            // O is fraction between 0–1 (outflow percentage)
             double outflow = opening * storage;
             storage -= outflow;
             if (storage < 0) storage = 0;
@@ -211,8 +206,6 @@ class WaterFlow {
 
         // Random rain: *Prand(a-b) river
         void scheduleRandomRain(String riverName, double min, double max) {
-            // We'll store as a special RainfallEvent with negative amount semantics,
-            // but to keep it simple, we immediately resolve randomness here and add to scheduled.
             double value = min + Math.random() * (max - min);
             scheduledRainEvents.add(new RainfallEvent(riverName, value));
         }
@@ -292,7 +285,7 @@ class WaterFlow {
 
         void simulateDamFlows() {
             for (Dam dam : dams) {
-                // Find the river that feeds this dam
+                // find the river that feeds this dam
                 River inflowRiver = findRiver(dam.inflow);
 
                 if (inflowRiver == null) {
@@ -302,8 +295,9 @@ class WaterFlow {
 
                 double inflowValue = inflowRiver.getCurrentFlow();
                 double outflowValue = dam.computeOutflow(inflowValue);
+                River target = findRiver(dam.outflowTarget == null ? "" : dam.outflowTarget);
+                if (target != null) target.damInflow = outflowValue;
 
-                // Keep the existing debug print you had
                 System.out.printf(
                         "Dam %-10s | Inflow: %-8.2f | Outflow: %-8.2f | Storage: %-8.2f%n",
                         dam.name, inflowValue, outflowValue, dam.storage
@@ -324,7 +318,6 @@ class WaterFlow {
                 }
             }
 
-            // River Info, print flow + terrain + area + exact stored and drained stats
             System.out.println("\nRivers:");
             for (River river : rivers) {
                 double storedNow = sumWaterArray(river.waterArray); // total mm currently in terrain (sum of array)
@@ -334,7 +327,6 @@ class WaterFlow {
                         storedNow, river.lastRainReceived, river.lastDrained);
             }
 
-            // Dam Info, shows inflow name and current storage/outflow. Also show outflow target if configured.
             System.out.println("\nDams:");
             if (dams.isEmpty()) {
                 System.out.println("  (none)");

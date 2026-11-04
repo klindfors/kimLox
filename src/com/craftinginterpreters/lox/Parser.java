@@ -178,7 +178,6 @@ class Parser {
 
         consume(SEMICOLON, "Expect ';' after dam declaration.");
 
-        // Build and return the AST node
         return new Stmt.DamDef(name, inflow, threshold, capacity, opening);
     }
 

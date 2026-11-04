@@ -19,17 +19,17 @@ public class FlowMain {
         System.out.println("Waterflow Interpreter");
         System.out.println();
 
-        if (args.length > 1) {
-            System.out.println("Usage: java FlowMain [exampleprogram]");
+        if (args.length > 2) {
+            System.out.println("Usage: java FlowMain [exampleprogram] [--gui]");
             System.exit(64);
-        } else if (args.length == 1) {
-            runFile(args[0]);
+        } else if (args.length >= 1) {
+            runFile(args[0], args.length == 2 && args[1].equals("--gui"));
         } else {
             runInteractiveMode();
         }
     }
 
-    private static void runFile(String path) throws IOException {
+    private static void runFile(String path, boolean gui) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
 
@@ -42,7 +42,12 @@ public class FlowMain {
         //after running file, enter interactive mode
         if (!hadError && !hadRuntimeError) {
             riverSystem = interpreter.getRiverSystem();
-            runInteractiveSimulation();
+            if (gui) {
+                FlowView.system = riverSystem;
+                javafx.application.Application.launch(FlowView.class);
+            } else {
+                runInteractiveSimulation();
+            }
         }
     }
 
@@ -138,7 +143,6 @@ public class FlowMain {
                     for (int i = 0; i < days; i++) {
                         System.out.println("~*~*~ Simulating Day " + (i + 1) + " ~*~*~");
                         riverSystem.simulateDay(new ArrayList<>());
-                        // Status is now printed automatically by simulateDay()
                     }
                     riverSystem.printSystemStatus();
 
@@ -204,13 +208,11 @@ public class FlowMain {
             return;
         }
 
-        // Print all river flows
         System.out.println("Rivers:");
         for (WaterFlow.River river : riverSystem.getRivers()) {
             System.out.printf("  %-12s : %.2f L/s%n", river.name, river.getCurrentFlow());
         }
 
-        // Print all dam flows
         if (riverSystem.getDams() != null && !riverSystem.getDams().isEmpty()) {
             System.out.println("\nDams:");
             for (WaterFlow.Dam dam : riverSystem.getDams()) {
@@ -239,7 +241,6 @@ public class FlowMain {
 
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
-        // Stop if there was a syntax error.
         if (hadError) return;
         interpreter.interpret(statements);
     } //kolla om det finns några errors, annars kör i vind.

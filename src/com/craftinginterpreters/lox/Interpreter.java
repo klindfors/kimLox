@@ -257,8 +257,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-
-
     private void handleRiverJoin(WaterFlow.River downstreamRiver, Expr connectionExpr) {
         if (connectionExpr instanceof Expr.RiverJoin joinExpr) {
             for (Expr riverExpr : joinExpr.rivers) {
@@ -267,6 +265,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                     WaterFlow.River upstreamRiver = riverSystem.findRiver(upstreamName);
                     if (upstreamRiver != null) {
                         downstreamRiver.addInflow(upstreamRiver);
+                    } else if (dams.containsKey(upstreamName)) {
+                        dams.get(upstreamName).outflowTarget = downstreamRiver.name;
                     }
                 }
             }
@@ -277,6 +277,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             WaterFlow.River upstreamRiver = riverSystem.findRiver(upstreamName);
             if (upstreamRiver != null) {
                 downstreamRiver.addInflow(upstreamRiver);
+            } else if (dams.containsKey(upstreamName)) {
+                dams.get(upstreamName).outflowTarget = downstreamRiver.name;
             }
         }
     }
@@ -398,7 +400,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return evaluate(expr.expression);
     }
 
-    // NEW: Handle array expressions
     @Override
     public Object visitArrayExpr(Expr.Array expr) {
         List<Object> elements = new ArrayList<>();
@@ -408,7 +409,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return elements;
     }
 
-    // NEW: Handle function calls (T, A, etc.)
     @Override
     public Object visitFunctionCallExpr(Expr.FunctionCall expr) {
         String functionName = expr.name.lexeme;
@@ -418,7 +418,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             arguments.add(evaluate(arg));
         }
 
-        // Handle built-in water flow functions
         switch (functionName) {
             case "T":
                 if (!arguments.isEmpty() && arguments.get(0) instanceof Double) {
@@ -431,7 +430,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 }
                 break;
             case "simulate":
-                // Built-in function to simulate the river system
+                //built-in function to simulate the river system
                 riverSystem.simulateDay(new ArrayList<>());
                 return null;
             case "status":
@@ -439,7 +438,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                 riverSystem.printSystemStatus();
                 return null;
             case "rain":
-                // Built-in function to add rainfall: rain("river_name", amount)
+                //built-in function to add rainfall: rain("river_name", amount)
                 if (arguments.size() >= 2 && arguments.get(0) instanceof String && arguments.get(1) instanceof Double) {
                     String riverName = (String) arguments.get(0);
                     double amount = (Double) arguments.get(1);
@@ -455,14 +454,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         throw new RuntimeError(expr.name, "Unknown function '" + functionName + "'.");
     }
 
-    // NEW: Handle flow expressions (^, <, >)
+    //handle flow expressions (^, <, >)
     @Override
     public Object visitFlowExprExpr(Expr.FlowExpr expr) {
-        // This is mainly used during river definition parsing
+        //used during river definition parsing
         return expr.operator.lexeme + (expr.operand != null ? " " + stringify(evaluate(expr.operand)) : "");
     }
 
-    // NEW: Handle river joins (&)
+    //handle river joins (&)
     @Override
     public Object visitRiverJoinExpr(Expr.RiverJoin expr) {
         List<String> riverNames = new ArrayList<>();
@@ -520,7 +519,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
     }
 
-    // Public method to access the river system for interactive use
+    //public method to access the river system for interactive use
     public WaterFlow.RiverSystem getRiverSystem() {
         return riverSystem;
     }
