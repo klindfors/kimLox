@@ -1,4 +1,9 @@
+To build without Maven you need a JavaFX SDK, I use javafx-sdk-21.0.13.
+Run from src/, replace FX with the path to the SDK lib folder.
+
 javac com/craftinginterpreters/tool/GenerateAst.java
-java com.craftinginterpreters.tool.GenerateAst com/craftinginterpreters/lox 
-javac com/craftinginterpreters/lox/*.java
-java -cp . com.craftinginterpreters.lox.FlowMain lule.water
+java com.craftinginterpreters.tool.GenerateAst com/craftinginterpreters/lox
+javac --module-path FX --add-modules javafx.controls com/craftinginterpreters/lox/*.java
+
+Text mode:      java -cp . com.craftinginterpreters.lox.FlowMain ../lule.water
+Visualisation:  java --module-path FX --add-modules javafx.controls -cp . com.craftinginterpreters.lox.FlowMain ../lule.water --gui
