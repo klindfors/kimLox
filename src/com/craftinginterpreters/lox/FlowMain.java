@@ -143,7 +143,6 @@ public class FlowMain {
                     for (int i = 0; i < days; i++) {
                         System.out.println("~*~*~ Simulating Day " + (i + 1) + " ~*~*~");
                         riverSystem.simulateDay(new ArrayList<>());
-                        // Status is now printed automatically by simulateDay()
                     }
                     riverSystem.printSystemStatus();
 
@@ -209,13 +208,11 @@ public class FlowMain {
             return;
         }
 
-        // Print all river flows
         System.out.println("Rivers:");
         for (WaterFlow.River river : riverSystem.getRivers()) {
             System.out.printf("  %-12s : %.2f L/s%n", river.name, river.getCurrentFlow());
         }
 
-        // Print all dam flows
         if (riverSystem.getDams() != null && !riverSystem.getDams().isEmpty()) {
             System.out.println("\nDams:");
             for (WaterFlow.Dam dam : riverSystem.getDams()) {
@@ -244,7 +241,6 @@ public class FlowMain {
 
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
-        // Stop if there was a syntax error.
         if (hadError) return;
         interpreter.interpret(statements);
     } //kolla om det finns några errors, annars kör i vind.
