@@ -19,17 +19,17 @@ public class FlowMain {
         System.out.println("Waterflow Interpreter");
         System.out.println();
 
-        if (args.length > 1) {
-            System.out.println("Usage: java FlowMain [exampleprogram]");
+        if (args.length > 2) {
+            System.out.println("Usage: java FlowMain [exampleprogram] [--gui]");
             System.exit(64);
-        } else if (args.length == 1) {
-            runFile(args[0]);
+        } else if (args.length >= 1) {
+            runFile(args[0], args.length == 2 && args[1].equals("--gui"));
         } else {
             runInteractiveMode();
         }
     }
 
-    private static void runFile(String path) throws IOException {
+    private static void runFile(String path, boolean gui) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
 
@@ -42,7 +42,12 @@ public class FlowMain {
         //after running file, enter interactive mode
         if (!hadError && !hadRuntimeError) {
             riverSystem = interpreter.getRiverSystem();
-            runInteractiveSimulation();
+            if (gui) {
+                FlowView.system = riverSystem;
+                javafx.application.Application.launch(FlowView.class);
+            } else {
+                runInteractiveSimulation();
+            }
         }
     }
 

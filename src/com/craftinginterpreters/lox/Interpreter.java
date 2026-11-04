@@ -257,8 +257,6 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return null;
     }
 
-
-
     private void handleRiverJoin(WaterFlow.River downstreamRiver, Expr connectionExpr) {
         if (connectionExpr instanceof Expr.RiverJoin joinExpr) {
             for (Expr riverExpr : joinExpr.rivers) {
@@ -267,6 +265,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
                     WaterFlow.River upstreamRiver = riverSystem.findRiver(upstreamName);
                     if (upstreamRiver != null) {
                         downstreamRiver.addInflow(upstreamRiver);
+                    } else if (dams.containsKey(upstreamName)) {
+                        dams.get(upstreamName).outflowTarget = downstreamRiver.name;
                     }
                 }
             }
@@ -277,6 +277,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             WaterFlow.River upstreamRiver = riverSystem.findRiver(upstreamName);
             if (upstreamRiver != null) {
                 downstreamRiver.addInflow(upstreamRiver);
+            } else if (dams.containsKey(upstreamName)) {
+                dams.get(upstreamName).outflowTarget = downstreamRiver.name;
             }
         }
     }
